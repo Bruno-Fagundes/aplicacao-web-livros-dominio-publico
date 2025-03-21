@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: bruno
+      POSTGRES_PASSWORD: senha123
+      POSTGRES_DB: literatura_publica
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    user: "${USERID}:${GROUPID}" # Adicionado esta linha
+
+volumes:
+  postgres-data:
