@@ -1,15 +1,13 @@
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@Entity(name = "Autor")
+@Entity
+@Table(name = "autores")
 public class Autor {
 
     @Id

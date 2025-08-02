@@ -1,8 +1,13 @@
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
 
     private Long id;
