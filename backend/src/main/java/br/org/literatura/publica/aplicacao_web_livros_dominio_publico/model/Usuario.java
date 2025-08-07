@@ -1,35 +1,65 @@
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
+@Getter // Adicionado para evitar código repetitivo de getters
+@Setter
+@ToString(exclude = {"listaDeLeituras", "playlists"})
 @Table(name = "usuarios")
 public class Usuario {
 
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "usuario_id")
+    private Long usuarioId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StatusUsuario status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "funcao")
+    private FuncaoUsuario funcaoUsuario;
+
+    @Column(name = "nome_usuario")
     private String nomeUsuario;
+
     private String email;
     private String senha;
-    private StatusUsuario status;
-    private String funcao;
+
+    @Column(name = "foto_perfil_url")
     private String fotoPerfilUrl;
+
+    @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
+
+    @Column(name = "criado_em")
     private LocalDateTime criadoEm;
+
+    @Column(name = "ultimo_acesso")
     private LocalDateTime ultimoAcesso;
 
-    // funcao Default USER
+    @JsonIgnore
+    @OneToMany(mappedBy = "usuario")
+    private List<LeituraUsuario> listaDeLeituras;
 
+    @OneToMany(mappedBy = "usuario")
+    private List<Playlist> playlists;
 
     public Long getId() {
-        return id;
+        return usuarioId;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.usuarioId = id;
     }
 
     public String getNomeUsuario() {
@@ -64,12 +94,12 @@ public class Usuario {
         this.status = status;
     }
 
-    public String getFuncao() {
-        return funcao;
+    public FuncaoUsuario getFuncao() {
+        return funcaoUsuario;
     }
 
-    public void setFuncao(String funcao) {
-        this.funcao = funcao;
+    public void setFuncao(FuncaoUsuario funcao) {
+        this.funcaoUsuario = funcao;
     }
 
     public String getFotoPerfilUrl() {
@@ -77,7 +107,7 @@ public class Usuario {
     }
 
     public void setFotoPerfilUrl(String fotoPerfilUrl) {
-        this.fotoPerfilUrl = fotoPerfilUrl;
+        this.fotoPerfilUrl = "/assets/images/foto-perfil-usuario";
     }
 
     public LocalDateTime getAtualizadoEm() {
@@ -102,5 +132,11 @@ public class Usuario {
 
     public void setUltimoAcesso(LocalDateTime ultimoAcesso) {
         this.ultimoAcesso = ultimoAcesso;
+    }
+
+    public void setUsername(String username) {
+    }
+    public Object getUsername() {
+        return null;
     }
 }
