@@ -14,4 +14,20 @@ import java.io.Serializable;
 public class LeituraUsuarioId implements Serializable {
     private Long usuarioId;
     private Long livroId;
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public Long getLivroId() {
+        return livroId;
+    }
+
+    public void setLivroId(Long livroId) {
+        this.livroId = livroId;
+    }
 }
