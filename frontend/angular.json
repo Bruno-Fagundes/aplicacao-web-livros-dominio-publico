@@ -40,7 +40,7 @@
             "ssr": {
               "entry": "src/server.ts"
             }
-          },
+          },  
           "configurations": {
             "production": {
               "budgets": [
@@ -67,6 +67,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"
@@ -90,10 +93,7 @@
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+              "scr/assets"
             ],
             "styles": [
               "src/styles.scss"
