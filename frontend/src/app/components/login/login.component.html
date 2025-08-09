@@ -1,0 +1,40 @@
+<head>
+  <title>Login</title>
+</head>
+<div class="login-container">
+  <div class="login-card">
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label for="user">Usuário ou E-mail</label>
+        <input
+          id="user"
+          formControlName="nomeUsuarioOuEmail"
+          type="text"
+          placeholder=""
+        />
+        <!-- Mensagem de erro abaixo do campo usuário -->
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="pass">Senha</label>
+        <input
+          id="pass"
+          formControlName="senha"
+          type="password"
+          placeholder=""
+        />
+      </div>
+
+      <div class="field">
+        <a href="/cadastro">Não tem uma conta? Cadastre-se</a>
+      </div>
+
+      <button class="btn-primary" type="submit" [disabled]="loading">
+        {{ loading ? "CARREGANDO..." : "ENTRAR" }}
+      </button>
+    </form>
+  </div>
+</div>
