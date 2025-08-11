@@ -34,13 +34,13 @@ public class LivroService {
             String urlCapa = gerarUrlCapa(livro);
             String urlPdf = gerarUrlPdf(livro);
 
-            // Criando a DTO do autor com apenas os dados necessários
-            AutorDto autorDto = new AutorDto();
+            // Criando a DTO do autor e preenchendo com os dados do Livro.autor
+            AutorDto autorDto = new AutorDto(livro.getAutor().getAutorId(), livro.getAutor().getNome());
 
             LivroDto dto = new LivroDto(
                     livro.getLivroId(),
                     livro.getTitulo(),
-                    autorDto, // Passando o objeto AutorDto
+                    autorDto, // Passando o objeto AutorDto preenchido
                     livro.getGenero(),
                     livro.getSubgenero(),
                     livro.getSinopse(),
@@ -56,7 +56,6 @@ public class LivroService {
         return Optional.empty();
     }
 
-
     // Novo método para listar todos os livros
     public List<LivroDto> listarTodosOsLivros() {
         List<Livro> livros = livroRepository.findAllWithAutor();
@@ -67,11 +66,13 @@ public class LivroService {
 
     // Método auxiliar para converter Livro em LivroDto
     private LivroDto converterParaLivroDto(Livro livro) {
-        AutorDto autorDto = new AutorDto();
+        // Preenchendo o autorDto com os dados corretos
+        AutorDto autorDto = new AutorDto(livro.getAutor().getAutorId(), livro.getAutor().getNome());
         String urlCapa = gerarUrlCapa(livro);
         String urlPdf = gerarUrlPdf(livro);
 
-        // Nota média não será calculada na listagem para performance, será 0 por enquanto
+        // Nota média não será calculada na listagem para performance, será 0 por
+        // enquanto
         float notaMedia = 0.0f;
 
         return new LivroDto(
@@ -85,8 +86,7 @@ public class LivroService {
                 notaMedia,
                 livro.getTotalPaginas(),
                 urlCapa,
-                urlPdf
-        );
+                urlPdf);
     }
 
     private String gerarUrlCapa(Livro livro) {
