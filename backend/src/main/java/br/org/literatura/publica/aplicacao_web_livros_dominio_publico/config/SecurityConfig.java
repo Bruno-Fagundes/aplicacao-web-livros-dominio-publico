@@ -33,7 +33,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                        // libera só GETs públicos de livros (inclui /api/livros/1 e /api/livros/pdf/...)
                         .requestMatchers(HttpMethod.GET, "/api/livros/**").permitAll()
                         // endpoints públicos (adapte conforme sua API)
                         .requestMatchers("/api/auth/**").permitAll()
@@ -41,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/assets/**", "/static/**", "/api/livros/pdf/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // use a instância injetada do filtro
+
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -1,7 +1,10 @@
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.controller;
 
-import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto.LivroDetalhesDto;
+import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto.LivroDto;
+import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model.Livro;
+import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.repository.LivroRepository;
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.service.LivroService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -11,12 +14,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/livros")
 @CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
 public class LivroController {
+
+    private  LivroRepository livroRepository;
 
     @Autowired
     private LivroService livroService;
@@ -25,8 +34,8 @@ public class LivroController {
     private ResourceLoader resourceLoader;
 
     @GetMapping("/{id}")
-    public ResponseEntity<LivroDetalhesDto> buscarLivroPorId(@PathVariable Long id) {
-        Optional<LivroDetalhesDto> livro = livroService.buscarDetalhesLivro(id);
+    public ResponseEntity<LivroDto> buscarLivroPorId(@PathVariable Long id) {
+        Optional<LivroDto> livro = livroService.buscarDetalhesLivro(id);
 
         if (livro.isPresent()) {
             return ResponseEntity.ok(livro.get());
@@ -53,5 +62,10 @@ public class LivroController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/listar")
+    public List<LivroDto> listar() {
+        return livroService.listarTodosOsLivros();
     }
 }
