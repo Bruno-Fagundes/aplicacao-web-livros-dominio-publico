@@ -1,54 +1,93 @@
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.service;
 
-import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto.LivroDetalhesDto;
+import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto.AutorDto;
+import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto.LivroDto;
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model.Livro;
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.repository.ClassificacaoLivrosRepository;
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LivroService {
 
-        @Autowired
-        private LivroRepository livroRepository;
+    @Autowired
+    private LivroRepository livroRepository;
 
-        @Autowired
-        private ClassificacaoLivrosRepository classificacaoLivrosRepository;
+    @Autowired
+    private ClassificacaoLivrosRepository classificacaoLivrosRepository;
 
-        public Optional<LivroDetalhesDto> buscarDetalhesLivro(Long id) {
-            Optional<Livro> livroOptional = livroRepository.findByIdWithAutor(id);
+    public Optional<LivroDto> buscarDetalhesLivro(Long id) {
+        Optional<Livro> livroOptional = livroRepository.findByIdWithAutor(id);
 
-            if (livroOptional.isPresent()) {
-                Livro livro = livroOptional.get();
+        if (livroOptional.isPresent()) {
+            Livro livro = livroOptional.get();
 
-                // busca a média das notas na tabela classificacao_livro
-                Double avg = classificacaoLivrosRepository.findAverageNotaByLivroId(id);
-                float notaMedia = avg == null ? 0f : avg.floatValue();
+            // busca a média das notas na tabela classificacao_livro
+            Double avg = classificacaoLivrosRepository.findAverageNotaByLivroId(id);
+            float notaMedia = avg == null ? 0f : avg.floatValue();
 
-                String urlCapa = gerarUrlCapa(livro);
-                String urlPdf = gerarUrlPdf(livro);
+            String urlCapa = gerarUrlCapa(livro);
+            String urlPdf = gerarUrlPdf(livro);
 
-                LivroDetalhesDto dto = new LivroDetalhesDto(
-                        livro.getLivroId(),
-                        livro.getTitulo(),
-                        livro.getAutor().getNome(),
-                        livro.getGenero(),
-                        livro.getSubgenero(),
-                        livro.getSinopse(),
-                        livro.getAnoPublicacao(),
-                        notaMedia,
-                        livro.getTotalPaginas(),
-                        urlCapa,
-                        urlPdf);
+            // Criando a DTO do autor com apenas os dados necessários
+            AutorDto autorDto = new AutorDto(livro.getAutor().getAutorId(), livro.getAutor().getNome());
 
-                return Optional.of(dto);
-            }
+            LivroDto dto = new LivroDto(
+                    livro.getLivroId(),
+                    livro.getTitulo(),
+                    autorDto, // Passando o objeto AutorDto
+                    livro.getGenero(),
+                    livro.getSubgenero(),
+                    livro.getSinopse(),
+                    livro.getAnoPublicacao(),
+                    notaMedia,
+                    livro.getTotalPaginas(),
+                    urlCapa,
+                    urlPdf);
 
-            return Optional.empty();
+            return Optional.of(dto);
         }
+
+        return Optional.empty();
+    }
+
+
+    // Novo método para listar todos os livros
+    public List<LivroDto> listarTodosOsLivros() {
+        List<Livro> livros = livroRepository.findAllWithAutor();
+        return livros.stream()
+                .map(this::converterParaLivroDto)
+                .collect(Collectors.toList());
+    }
+
+    // Método auxiliar para converter Livro em LivroDto
+    private LivroDto converterParaLivroDto(Livro livro) {
+        AutorDto autorDto = new AutorDto(livro.getAutor().getAutorId(), livro.getAutor().getNome());
+        String urlCapa = gerarUrlCapa(livro);
+        String urlPdf = gerarUrlPdf(livro);
+
+        // Nota média não será calculada na listagem para performance, será 0 por enquanto
+        float notaMedia = 0.0f;
+
+        return new LivroDto(
+                livro.getLivroId(),
+                livro.getTitulo(),
+                autorDto,
+                livro.getGenero(),
+                livro.getSubgenero(),
+                livro.getSinopse(),
+                livro.getAnoPublicacao(),
+                notaMedia,
+                livro.getTotalPaginas(),
+                urlCapa,
+                urlPdf
+        );
+    }
 
     private String gerarUrlCapa(Livro livro) {
         String nomeAutor = formatarNomeArquivo(livro.getAutor().getNome());
