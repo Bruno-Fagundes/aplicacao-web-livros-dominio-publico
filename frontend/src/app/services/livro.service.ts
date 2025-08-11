@@ -7,8 +7,13 @@ import { LivroDetalhes } from '../interfaces/livro.interface';
     providedIn: 'root'
 })
 export class LivroService {
+
     private apiUrl = 'http://localhost:8080/api/livros';
 
+    // Método que retorna um Observable<LivroDetalhes[]>
+    listarTodosOsLivros(): Observable<LivroDetalhes[]> {
+        return this.http.get<LivroDetalhes[]>(`${this.apiUrl}/listar`);
+    }
     constructor(private http: HttpClient) { }
 
     listarIdsDeLivros(): Observable<number[]> {
