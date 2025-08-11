@@ -9,6 +9,7 @@ import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.repository
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,9 +47,10 @@ public class AutorService {
         dto.setUrlFoto(autor.getUrlFoto());
 
         // Mapeia a lista de livros do autor para LivroDto
-        List<LivroDto> livrosDto = autor.getLivros().stream()
-                .map(this::converterParaLivroDto) // Usa o novo método auxiliar
-                .collect(Collectors.toList());
+        // Adiciona uma verificação para garantir que a lista de livros não seja nula
+        List<LivroDto> livrosDto = autor.getLivros() != null ? autor.getLivros().stream()
+                .map(this::converterParaLivroDto)
+                .collect(Collectors.toList()) : Collections.emptyList(); // Retorna uma lista vazia se for nulo
 
         dto.setLivros(livrosDto);
 
@@ -58,6 +60,7 @@ public class AutorService {
     /**
      * Método auxiliar para converter uma entidade Livro em um LivroDto completo.
      * Esta conversão preenche todos os campos do DTO.
+     * 
      * @param livro A entidade Livro.
      * @return O LivroDto correspondente.
      */

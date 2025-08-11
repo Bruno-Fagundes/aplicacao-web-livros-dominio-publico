@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router'; // RouterModule foi adicionado aqui
 import { LivroService } from '../../services/livro.service';
 import { LivroDetalhes } from '../../interfaces/livro.interface';
+import { AutorDetalhes } from '../../interfaces/autor.interface';
 
 @Component({
   selector: 'app-livro-detalhes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './livro-detalhes.component.html',
   styleUrls: ['./livro-detalhes.component.scss']
 })

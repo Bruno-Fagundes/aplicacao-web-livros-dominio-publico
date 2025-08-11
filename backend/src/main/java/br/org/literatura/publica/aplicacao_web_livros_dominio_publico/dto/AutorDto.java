@@ -17,6 +17,14 @@ public class AutorDto {
     private String urlFoto;
     private List<LivroDto> livros;
 
+    public AutorDto() {
+    }
+
+    public AutorDto(long autorId, String nome) {
+        this.autorId = autorId;
+        this.nome = nome;
+    }
+
     public Long getAutorId() {
         return autorId;
     }
