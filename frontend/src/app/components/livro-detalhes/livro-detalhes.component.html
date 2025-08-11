@@ -1,3 +1,14 @@
+<header class="header-site">
+  <title>{{ livro?.titulo }}</title>
+  <a href="/">
+    <img
+      src="/assets/images/logo-site/logo-site.svg"
+      alt="Logo do Site"
+      class="logo-site"
+    />
+  </a>
+</header>
+
 <!-- Loading State -->
 <div *ngIf="carregando" class="loading-container">
   <div class="spinner"></div>
@@ -17,16 +28,18 @@
     <div class="livro-header">
       <div class="capa-container">
         <img
-          [src]="livro?.urlCapa"
-          [alt]="'Capa do livro ' + livro?.titulo"
+          [src]="livro.urlCapa"
+          [alt]="'Capa do livro ' + livro.titulo"
           class="capa-livro"
           (error)="onImageError($event)"
         />
       </div>
 
       <div class="info-container">
-        <h1 class="titulo-livro">{{ livro?.titulo }}</h1>
-        <h2 class="nome-autor">{{ livro?.nomeAutor }}</h2>
+        <h1 class="titulo-livro">{{ livro.titulo }}</h1>
+        <a href="/autores/:{{ livro.idAutor }}">
+          <h2 class="nome-autor">{{ livro.nomeAutor }}</h2>
+        </a>
 
         <div class="acoes">
           <button (click)="continuarLendo()" class="btn btn-primary">
@@ -54,14 +67,7 @@
               (click)="toggleFavorito()"
               class="btn-icon"
               title="Favoritar"
-            >
-              <svg class="icon-heart" viewBox="0 0 24 24">
-                <path
-                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-                  [class.filled]="favorito"
-                />
-              </svg>
-            </button>
+            ></button>
           </div>
         </div>
       </div>
@@ -70,38 +76,38 @@
     <div class="detalhes-adicionais">
       <div class="info-item">
         <span class="label">Quantidade de Páginas:</span>
-        <span class="valor">{{ livro?.totalPaginas }}</span>
+        <span class="valor">{{ livro.totalPaginas }}</span>
       </div>
 
       <div class="info-item">
         <span class="label">Ano de Publicação:</span>
-        <span class="valor">{{ livro?.anoPublicacao }}</span>
+        <span class="valor">{{ livro.anoPublicacao }}</span>
       </div>
 
       <div class="info-item">
         <span class="label">Gênero:</span>
-        <span class="valor">{{ livro?.genero }}</span>
+        <span class="valor">{{ livro.genero }}</span>
       </div>
 
       <!-- Rating com estrelas -->
-      <div class="info-item" *ngIf="livro?.nota > 0">
+      <div class="info-item" *ngIf="livro && livro.nota > 0">
         <span class="label">Avaliação:</span>
         <div class="rating">
           <span
-            *ngFor="let estrela of gerarEstrelas(livro?.nota || 0)"
+            *ngFor="let estrela of gerarEstrelas(livro.nota)"
             class="star"
             [class.filled]="estrela === 1"
           >
             ★
           </span>
-          <span class="rating-number">({{ livro?.nota }}/5)</span>
+          <span class="rating-number">({{ livro.nota }}/5)</span>
         </div>
       </div>
     </div>
 
     <div class="sinopse-section">
       <h3>Sinopse</h3>
-      <p class="sinopse-texto">{{ livro?.sinopse }}</p>
+      <p class="sinopse-texto">{{ livro.sinopse }}</p>
     </div>
   </div>
 </div>

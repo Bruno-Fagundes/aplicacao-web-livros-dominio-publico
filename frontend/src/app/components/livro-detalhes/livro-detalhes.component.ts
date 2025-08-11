@@ -1,11 +1,13 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LivroService } from '../../services/livro.service';
 import { LivroDetalhes } from '../../interfaces/livro.interface';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-livro-detalhes',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './livro-detalhes.component.html',
   styleUrls: ['./livro-detalhes.component.scss']
 })
@@ -26,7 +28,6 @@ export class LivroDetalhesComponent implements OnInit {
     if (id) {
       this.carregarLivro(id);
     } else {
-      // se não veio id, decide o comportamento: redirecionar ou mostrar mensagem
       this.carregando = false;
       this.erro = true;
     }

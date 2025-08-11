@@ -7,12 +7,14 @@ import { LivroDetalhes } from '../interfaces/livro.interface';
     providedIn: 'root'
 })
 export class LivroService {
-    listarIdsDeLivros() {
-        throw new Error('Method not implemented.');
-    }
     private apiUrl = 'http://localhost:8080/api/livros';
 
     constructor(private http: HttpClient) { }
+
+    listarIdsDeLivros(): Observable<number[]> {
+        // Exemplo de endpoint para listar IDs. Ajuste conforme sua API.
+        return this.http.get<number[]>(`${this.apiUrl}/ids`);
+    }
 
     buscarLivroPorId(id: number): Observable<LivroDetalhes> {
         return this.http.get<LivroDetalhes>(`${this.apiUrl}/${id}`);
