@@ -30,6 +30,8 @@ public class Livro {
 
     @Column(name = "ano_publicacao")
     private int anoPublicacao;
+
+    @Transient
     private float nota;
 
     @Column(name = "total_paginas")

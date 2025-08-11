@@ -17,6 +17,14 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    // injete o filtro (assumindo que JwtAuthenticationFilter é @Component ou @Bean)
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -24,12 +32,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        // libera só GETs públicos de livros (inclui /api/livros/1 e /api/livros/pdf/...)
+                        .requestMatchers(HttpMethod.GET, "/api/livros/**").permitAll()
+                        // endpoints públicos (adapte conforme sua API)
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/usuarios/**").permitAll()
+                        .requestMatchers("/assets/**", "/static/**", "/api/livros/pdf/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // Adiciona seu filtro JWT antes do filtro de autenticação padrão
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                // use a instância injetada do filtro
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -37,22 +50,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // Em dev, permita só o frontend
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-
-        // Permitir métodos usados pelo frontend
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // Permitir headers que o Angular enviará (Content-Type, Authorization, etc)
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-
-        // Se você usa JWT no header, NÃO precisa de cookies; deixe false
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
         configuration.setAllowCredentials(false);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 }
