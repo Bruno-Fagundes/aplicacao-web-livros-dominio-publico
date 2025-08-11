@@ -37,8 +37,8 @@
 
       <div class="info-container">
         <h1 class="titulo-livro">{{ livro.titulo }}</h1>
-        <a href="/autores/:{{ livro.idAutor }}">
-          <h2 class="nome-autor">{{ livro.nomeAutor }}</h2>
+        <a href="/autores/:{{ livro.autor.autorId }}">
+          <h2 class="nome-autor">{{ livro.autor.nome }}</h2>
         </a>
 
         <div class="acoes">
