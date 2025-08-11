@@ -73,11 +73,11 @@ public class Autor {
         this.dataFalecimento = dataFalecimento;
     }
 
-    public String getUrl_foto() {
+    public String getUrlFoto() {
         return urlFoto;
     }
 
-    public void setUrl_foto(String url_foto) {
+    public void setUrlFoto(String url_foto) {
         this.urlFoto = url_foto;
     }
 

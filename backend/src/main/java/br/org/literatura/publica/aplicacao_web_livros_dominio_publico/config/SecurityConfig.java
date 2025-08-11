@@ -50,7 +50,7 @@ public class SecurityConfig {
 
                         // Permite acesso público aos endpoints de autenticação (login, cadastro)
                         .requestMatchers("/api/auth/**").permitAll()
-
+                        .requestMatchers("/api/autores/**").permitAll()
                         // Permite acesso público aos endpoints de usuários (se houver)
                         .requestMatchers("/api/usuarios/**").permitAll()
 

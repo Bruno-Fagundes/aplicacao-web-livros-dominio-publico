@@ -35,7 +35,7 @@ public class LivroService {
             String urlPdf = gerarUrlPdf(livro);
 
             // Criando a DTO do autor com apenas os dados necessários
-            AutorDto autorDto = new AutorDto(livro.getAutor().getAutorId(), livro.getAutor().getNome());
+            AutorDto autorDto = new AutorDto();
 
             LivroDto dto = new LivroDto(
                     livro.getLivroId(),
@@ -67,7 +67,7 @@ public class LivroService {
 
     // Método auxiliar para converter Livro em LivroDto
     private LivroDto converterParaLivroDto(Livro livro) {
-        AutorDto autorDto = new AutorDto(livro.getAutor().getAutorId(), livro.getAutor().getNome());
+        AutorDto autorDto = new AutorDto();
         String urlCapa = gerarUrlCapa(livro);
         String urlPdf = gerarUrlPdf(livro);
 
