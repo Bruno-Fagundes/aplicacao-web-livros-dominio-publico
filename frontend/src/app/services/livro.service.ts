@@ -10,16 +10,10 @@ export class LivroService {
 
     private apiUrl = 'http://localhost:8080/api/livros';
 
-    // Método que retorna um Observable<LivroDetalhes[]>
-    listarTodosOsLivros(): Observable<LivroDetalhes[]> {
+    listarLivros(): Observable<LivroDetalhes[]> {
         return this.http.get<LivroDetalhes[]>(`${this.apiUrl}/listar`);
     }
     constructor(private http: HttpClient) { }
-
-    listarIdsDeLivros(): Observable<number[]> {
-        // Exemplo de endpoint para listar IDs. Ajuste conforme sua API.
-        return this.http.get<number[]>(`${this.apiUrl}/ids`);
-    }
 
     buscarLivroPorId(id: number): Observable<LivroDetalhes> {
         return this.http.get<LivroDetalhes>(`${this.apiUrl}/${id}`);
