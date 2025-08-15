@@ -4,14 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
-
-export interface Usuario {
-  id?: number;
-  nomeUsuario: string;
-  email: string;
-  senha: string;
-  confirmarSenha?: string;
-}
+import { Usuario } from '../interfaces/usuario.interface'; // Importado da sua pasta de interfaces
 
 export interface UsuarioLogin {
   nomeUsuarioOuEmail: string;
@@ -58,7 +51,6 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials)
       .pipe(
         tap(response => {
-          // Salva o token e dados do usuário somente no browser
           if (this.isBrowser) {
             localStorage.setItem('token', response.token);
             localStorage.setItem('currentUser', JSON.stringify(response.usuario));
