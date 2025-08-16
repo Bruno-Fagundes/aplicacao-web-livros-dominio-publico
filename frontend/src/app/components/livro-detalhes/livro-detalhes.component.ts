@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router'; // RouterModule foi adicionado aqui
-import { LivroService } from '../../services/livro.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { LivroDetalhes } from '../../interfaces/livro.interface';
-import { AutorDetalhes } from '../../interfaces/autor.interface';
+import { AuthService } from '../../services/auth.service';
+import { Subject, takeUntil } from 'rxjs';
+import { Usuario } from '../../interfaces/usuario.interface';
+import { AutorService } from '../../services/autor.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-livro-detalhes',
@@ -12,69 +15,59 @@ import { AutorDetalhes } from '../../interfaces/autor.interface';
   templateUrl: './livro-detalhes.component.html',
   styleUrls: ['./livro-detalhes.component.scss']
 })
-export class LivroDetalhesComponent implements OnInit {
-  livro: LivroDetalhes | null = null;
-  carregando = true;
-  erro = false;
-  favorito = false;
+export class LivroDetalhesComponent implements OnInit, OnDestroy {
+  public livro: LivroDetalhes | null = null;
+  public carregando = false;
+  public erro = false;
+  public favorito = false;
+
+  public usuarioLogado: Usuario | null = null;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
-    private livroService: LivroService
+    private authService: AuthService,
+    private autorService: AutorService,
+    private title: Title
   ) { }
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    const id = idParam ? Number(idParam) : null;
-    if (id) {
-      this.carregarLivro(id);
-    } else {
-      this.carregando = false;
-      this.erro = true;
-    }
-  }
-
-  carregarLivro(id: number): void {
-    this.carregando = true;
-    this.erro = false;
-
-    this.livroService.buscarLivroPorId(id).subscribe({
-      next: (livro) => {
-        this.livro = livro;
-        this.carregando = false;
-      },
-      error: () => {
+    // Busca o livro que foi resolvido pela rota
+    this.route.data.subscribe(({ livro }) => {
+      this.livro = livro;
+      if (!this.livro) {
         this.erro = true;
-        this.carregando = false;
+      } else {
+        // só seta o título depois que o livro existir
+        this.title.setTitle(this.livro.titulo + ' — Literatura Pública');
       }
     });
+
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((usuario: Usuario | null) => {
+        this.usuarioLogado = usuario;
+      });
   }
 
-  continuarLendo(): void {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  public continuarLendo(): void {
     if (this.livro) {
       window.open(this.livro.urlPdf, '_blank');
     }
   }
 
-  lerDoInicio(): void {
+  public lerDoInicio(): void {
     if (this.livro) {
       window.open(this.livro.urlPdf, '_blank');
     }
   }
 
-  toggleFavorito(): void {
-    this.favorito = !this.favorito;
-  }
-
-  adicionarAosFavoritos(): void {
-    this.favorito = true;
-  }
-
-  gerarEstrelas(nota: number = 0): number[] {
-    return Array.from({ length: 5 }, (_, i) => i < Math.floor(nota) ? 1 : 0);
-  }
-
-  onImageError(event: Event) {
+  public onImageError(event: Event) {
     const img = event.target as HTMLImageElement;
     img.onerror = null;
     img.src = 'assets/images/placeholder-cover.jpg';

@@ -1,44 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
-// Global link styles - coloque no arquivo global (ex: src/styles.scss)
-$brand-red: #D90000; // remova se já estiver importando a variável de outro arquivo
-
-a {
-  color: $brand-red;
-  text-decoration: none;               // sem underline por padrão
-  font-weight: 500;
-  transition: color 120ms ease,        // transição suave
-              text-decoration-color 120ms ease;
-  -webkit-tap-highlight-color: transparent;
-  cursor: pointer;
-  text-underline-offset: 2px;          // em px conforme pediu
+:root {
+  --brand-red: #D90000;
+  --bg: #ffffff;
+  --muted: #6b7280;
+  --max-width: 1200px;
+  --header-padding-vertical: 14px;
+  --header-padding-horizontal: 20px;
 }
 
-a:visited {
-  color: $brand-red;                   // mesma cor para evitar surpresa
-}
-
-a:hover,
-a:active {
-  color: darken($brand-red, 8%);
-  text-decoration: underline;
-}
-
-a:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(red($brand-red), green($brand-red), blue($brand-red), 0.12);
-  border-radius: 4px;
-}
-
-/* Caso queira forçar links dentro de botões ou elementos específicos a manter outro estilo,
-   crie uma classe para sobrescrever, por exemplo: */
-.no-link-red,
-.no-link-red a {
-  color: inherit !important;
-  text-decoration: underline !important;
-}
-
-/* exemplo para links dentro de cards onde você queira um peso e estilo diferente */
-.card a {
-  font-weight: 600;
-  text-decoration: none;
-}
+a { color: var(--brand-red); text-decoration: none; }
+a:hover { text-decoration: underline; }
