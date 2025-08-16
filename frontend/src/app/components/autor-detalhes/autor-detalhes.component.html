@@ -1,29 +1,14 @@
-<!-- src/app/pages/autor-detalhes/autor-detalhes.component.html -->
-<header class="header-site">
-  <title>{{ autor?.nome }}</title>
-  <a href="/">
-    <img
-      src="/assets/images/logo-site/logo-site.svg"
-      alt="Logo do Site"
-      class="logo-site"
-    />
-  </a>
-</header>
-
-<!-- Loading State -->
 <div *ngIf="carregando" class="loading-container">
   <div class="spinner"></div>
   <p>Carregando detalhes do autor...</p>
 </div>
 
-<!-- Error State -->
 <div *ngIf="erro && !carregando" class="error-container">
   <h2>Erro ao carregar o autor</h2>
   <p>Não foi possível encontrar os detalhes do autor solicitado.</p>
   <button (click)="carregarAutor(1)" class="btn-retry">Tentar Novamente</button>
 </div>
 
-<!-- Author Details -->
 <div *ngIf="autor && !carregando && !erro" class="autor-detalhes">
   <div class="container">
     <div class="autor-header">
@@ -39,12 +24,12 @@
       <div class="info-container">
         <h1 class="nome-autor">{{ autor.nome }}</h1>
         <div class="datas-autor">
-          <span class="data-nascimento" *ngIf="autor.dataNascimento"
-            >Nascimento: {{ autor.dataNascimento }}</span
-          >
-          <span class="data-falecimento" *ngIf="autor.dataFalecimento"
-            >Falecimento: {{ autor.dataFalecimento }}</span
-          >
+          <span class="data-nascimento" *ngIf="autor.dataNascimento">
+            Nascimento: {{ autor.dataNascimento | date : "dd/MM/yyyy" }}
+          </span>
+          <span class="data-falecimento" *ngIf="autor.dataFalecimento">
+            Falecimento: {{ autor.dataFalecimento | date : "dd/MM/yyyy" }}
+          </span>
         </div>
       </div>
     </div>

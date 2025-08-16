@@ -7,6 +7,7 @@ export interface AutorDetalhes {
     urlFoto: string;
     livros: LivroDetalhes[];
 }
+
 export interface LivroDetalhes {
     autor: AutorDetalhes;
     livroId: number;

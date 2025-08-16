@@ -1,0 +1,17 @@
+<div class="container">
+  <div class="usuario-header">
+    <img
+      [src]="usuario?.fotoPerfilUrl"
+      [alt]="'Foto de perfil de ' + usuario?.nome"
+      class="foto-perfil"
+      (error)="onImageError($event)"
+    />
+  </div>
+</div>
+
+<p class="nome-usuario">{{ usuario?.nome }}</p>
+
+<p>
+  Livros lidos, Livros avaliados, playlists criadas, quantas paginas o usuario
+  leu, genero favorito
+</p>

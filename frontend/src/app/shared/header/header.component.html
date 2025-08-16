@@ -1,0 +1,46 @@
+<header #headerEl class="header-site">
+  <div class="header-inner">
+    <a routerLink="/" class="logo-link">
+      <img
+        src="/assets/images/logo-site/logo-site.svg"
+        alt="Logo do Site"
+        class="logo-site"
+      />
+    </a>
+
+    <nav class="main-nav">
+      <a routerLink="/livros" class="nav-link">Livros</a>
+      <a routerLink="/autores" class="nav-link">Autores</a>
+    </nav>
+
+    <div class="search-and-user">
+      <div class="search-bar">
+        <input type="text" placeholder="PESQUISAR" />
+        <button aria-label="Pesquisar">
+          <img src="/assets/images/icones/buscar_icon.svg" alt="Buscar" />
+        </button>
+      </div>
+
+      <div class="usuario-button">
+        <ng-container *ngIf="usuarioLogado; else loginButton">
+          <a
+            *ngIf="usuarioLogado?.id"
+            [routerLink]="['/usuarios', usuarioLogado.id]"
+            class="user-link"
+          >
+            <img
+              width="46"
+              height="46"
+              src="/assets/images/foto-perfil-usuario/foto-usuario.svg"
+              alt="Foto do Usuário"
+            />
+          </a>
+        </ng-container>
+
+        <ng-template #loginButton>
+          <a routerLink="/login" class="nav-link login">Entrar</a>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</header>

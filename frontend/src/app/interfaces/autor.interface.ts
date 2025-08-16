@@ -1,5 +1,15 @@
-// A interface LivroDetalhes deve incluir o objeto AutorDetalhes
-export interface LivroDetalhes {
+export interface AutorDetalhes {
+    autorId: number;
+    nome: string;
+    biografia: string;
+    dataNascimento: Date;
+    dataFalecimento: Date;
+    urlFoto: string;
+    livros: Livro[];
+}
+
+export interface Livro {
+    length: any;
     livroId: number;
     urlCapa: string;
     urlPdf: string;
@@ -10,16 +20,5 @@ export interface LivroDetalhes {
     anoPublicacao: number;
     nota: number;
     totalPaginas: number;
-    // Propriedade autor adicionada
     autor: AutorDetalhes;
-}
-
-export interface AutorDetalhes {
-    autorId: number;
-    nome: string;
-    biografia: string;
-    dataNascimento: Date;
-    dataFalecimento: Date;
-    urlFoto: string;
-    livros: LivroDetalhes[];
 }
