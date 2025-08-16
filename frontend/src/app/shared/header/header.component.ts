@@ -1,14 +1,15 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { AuthService } from '../../services/auth.service'; // ajuste o path se necessário
+import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef, HostListener, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 import { Subject, takeUntil } from 'rxjs';
-import { Usuario } from '../../services/usuario.service';
+import { Usuario } from '../../interfaces/usuario.interface';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  standalone: true,                    // <-- torna o componente standalone
-  imports: [CommonModule, RouterModule],//
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
@@ -18,27 +19,46 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
   usuarioLogado?: Usuario;
   private destroy$ = new Subject<void>();
 
-  constructor(private authService: AuthService) { }
-
+  constructor(
+    private authService: AuthService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
 
   ngAfterViewInit(): void {
-    // define a variavel CSS quando o componente for inicializado
-    this.setHeaderHeight();
+    // só tenta manipular o DOM se estivermos no browser
+    if (isPlatformBrowser(this.platformId)) {
+      this.setHeaderHeight();
+    }
   }
 
   @HostListener('window:resize')
   onResize(): void {
-    // recalcula a altura em resize
-    this.setHeaderHeight();
+    if (isPlatformBrowser(this.platformId)) {
+      this.setHeaderHeight();
+    }
   }
 
   private setHeaderHeight(): void {
-    requestAnimationFrame(() => {
-      const height = this.headerEl.nativeElement.offsetHeight;
-      document.documentElement.style.setProperty('--header-height', `${height}px`);
-    });
-  }
+    // segurança: se não tivermos document ou o elemento ainda não existir, sair
+    if (typeof document === 'undefined' || !this.headerEl?.nativeElement) {
+      return;
+    }
 
+    const update = () => {
+      const height = this.headerEl.nativeElement.offsetHeight;
+      // checar document.documentElement por precaução
+      if (document && document.documentElement && typeof document.documentElement.style !== 'undefined') {
+        document.documentElement.style.setProperty('--header-height', `${height}px`);
+      }
+    };
+
+    // usar requestAnimationFrame quando disponível, senão fallback para setTimeout
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(update);
+    } else {
+      setTimeout(update, 0);
+    }
+  }
 
   ngOnInit(): void {
     this.authService.currentUser$

@@ -12,19 +12,10 @@ export class AutorService {
 
     constructor(private http: HttpClient) { }
 
-    /**
-     * Busca os detalhes de um autor pelo seu ID.
-     * @param id O ID do autor a ser buscado.
-     * @returns Um Observable com os detalhes do autor.
-     */
     buscarDetalhesAutor(id: number): Observable<AutorDetalhes> {
         return this.http.get<AutorDetalhes>(`${this.apiUrl}/${id}`);
     }
 
-    /**
-     * Lista todos os autores disponíveis.
-     * @returns Um Observable com a lista de todos os autores.
-     */
     listarAutores(): Observable<AutorDetalhes[]> {
         return this.http.get<AutorDetalhes[]>(`${this.apiUrl}/listar`);
     }

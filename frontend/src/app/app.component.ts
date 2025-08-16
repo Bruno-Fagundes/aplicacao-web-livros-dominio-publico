@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from "./shared/header/header.component";
 
@@ -10,15 +10,9 @@ import { HeaderComponent } from "./shared/header/header.component";
 })
 
 export class AppComponent implements AfterViewInit {
-  title = 'Literatura Pública';
-
-  @ViewChild('headerEl') headerEl!: ElementRef<HTMLElement>;
-  headerHeightReady = false;
-
-  ngAfterViewInit() {
-    const height = this.headerEl.nativeElement.offsetHeight;
-    document.documentElement.style.setProperty('--header-height', `${height}px`);
-    this.headerHeightReady = true;
+  ngAfterViewInit(): void {
+    throw new Error('Method not implemented.');
   }
+  title = 'Literatura Pública';
 }
 

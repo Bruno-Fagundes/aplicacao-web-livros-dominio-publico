@@ -6,8 +6,8 @@ import { LivroDetalhes } from '../interfaces/livro.interface';
 @Injectable({
     providedIn: 'root'
 })
-export class LivroService {
 
+export class LivroService {
     private apiUrl = 'http://localhost:8080/api/livros';
 
     listarLivros(): Observable<LivroDetalhes[]> {

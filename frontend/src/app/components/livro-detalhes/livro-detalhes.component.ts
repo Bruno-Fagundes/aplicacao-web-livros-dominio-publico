@@ -1,3 +1,5 @@
+// src/app/components/livro-detalhes/livro-detalhes.component.ts
+
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -17,9 +19,9 @@ import { Title } from '@angular/platform-browser';
 })
 export class LivroDetalhesComponent implements OnInit, OnDestroy {
   public livro: LivroDetalhes | null = null;
-  public carregando = false;
+  public carregando = true; // Inicie como 'true' para mostrar o spinner
   public erro = false;
-  public favorito = false;
+  public favorito = false; // Lógica de favorito a ser implementada
 
   public usuarioLogado: Usuario | null = null;
   private destroy$ = new Subject<void>();
@@ -33,15 +35,24 @@ export class LivroDetalhesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Busca o livro que foi resolvido pela rota
-    this.route.data.subscribe(({ livro }) => {
-      this.livro = livro;
-      if (!this.livro) {
-        this.erro = true;
-      } else {
-        // só seta o título depois que o livro existir
-        this.title.setTitle(this.livro.titulo + ' — Literatura Pública');
-      }
-    });
+    this.route.data
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: ({ livro }) => {
+          this.livro = livro;
+          this.carregando = false;
+          if (this.livro) {
+            this.title.setTitle(this.livro.titulo + ' — Literatura Pública');
+          } else {
+            // Se o resolver retornou nulo, indica um erro
+            this.erro = true;
+          }
+        },
+        error: () => {
+          this.carregando = false;
+          this.erro = true;
+        }
+      });
 
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))

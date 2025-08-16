@@ -1,3 +1,5 @@
+// src/app/app.routes.ts
+
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { CadastroComponent } from './components/cadastro/cadastro.component';
@@ -15,9 +17,8 @@ import { EMPTY } from 'rxjs';
 import { Router } from '@angular/router';
 
 export const routes: Routes = [
+    { path: '', component: PaginaInicialComponent }, // <-- Mudei para o topo
     { path: 'login', component: LoginComponent },
-    //    { path: '', redirectTo: '/login', pathMatcwh: 'full' },
-    //    { path: '**', redirectTo: '/login' },
     { path: 'cadastro', component: CadastroComponent },
     { path: 'usuarios/undefined', component: LoginComponent },
     { path: 'pagina-inicial', component: PaginaInicialComponent },
@@ -29,7 +30,6 @@ export const routes: Routes = [
                 const livroService = inject(LivroService);
                 const router = inject(Router);
                 const id = Number(route.paramMap.get('id'));
-
 
                 return livroService.buscarLivroPorId(id).pipe(
                     catchError(() => {
@@ -45,5 +45,4 @@ export const routes: Routes = [
     { path: 'autores', component: AutoresComponent },
     { path: 'usuarios/:id', component: UsuarioDetalhesComponent },
     { path: '**', component: PaginaInicialComponent },
-    { path: '', component: PaginaInicialComponent },
 ];
