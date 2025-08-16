@@ -3,7 +3,6 @@ import { LivroService } from "../../services/livro.service";
 import { LivroDetalhes } from "../../interfaces/livro.interface";
 import { AutorService } from "../../services/autor.service";
 import { AutorDetalhes } from "../../interfaces/autor.interface";
-import { UsuarioService } from "../../services/usuario.service";
 import { Usuario } from "../../interfaces/usuario.interface";
 import { CommonModule } from "@angular/common";
 import { RouterLink, RouterModule } from "@angular/router";

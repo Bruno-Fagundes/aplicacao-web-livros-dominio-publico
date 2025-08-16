@@ -3,6 +3,14 @@
   <p>Carregando detalhes do livro...</p>
 </div>
 
+<div *ngIf="erro && !carregando" class="error-container">
+  <h2>Erro ao carregar o livro</h2>
+  <p>
+    Não foi possível encontrar os detalhes do livro solicitado. Por favor, tente
+    novamente mais tarde.
+  </p>
+</div>
+
 <div *ngIf="livro && !carregando && !erro" class="livro-detalhes">
   <div class="container">
     <div class="livro-header">
