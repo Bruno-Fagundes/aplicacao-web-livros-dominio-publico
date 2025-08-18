@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("/api/livros")
+@RequestMapping("/livros")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class LivroController {
@@ -64,7 +64,7 @@ public class LivroController {
         }
     }
 
-    @GetMapping("/listar")
+    @GetMapping("")
     public List<LivroDto> listar() {
         return livroService.listarTodosOsLivros();
     }
