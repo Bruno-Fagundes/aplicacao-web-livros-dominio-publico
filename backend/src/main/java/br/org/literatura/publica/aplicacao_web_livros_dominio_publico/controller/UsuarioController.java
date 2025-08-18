@@ -20,7 +20,7 @@ import static br.org.literatura.publica.aplicacao_web_livros_dominio_publico.mod
 import static br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model.StatusUsuario.ativo;
 
 @RestController
-@RequestMapping("/api/auth/usuarios")
+@RequestMapping("/usuarios")
 @RequiredArgsConstructor
 public class UsuarioController {
 

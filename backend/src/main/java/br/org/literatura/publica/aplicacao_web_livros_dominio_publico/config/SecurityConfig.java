@@ -37,9 +37,10 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/livros/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/autores/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/livros/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/usuarios/**").permitAll()
+                        .requestMatchers("/autores/**").permitAll()
                         .requestMatchers("/assets/**", "/static/**", "/api/livros/pdf/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

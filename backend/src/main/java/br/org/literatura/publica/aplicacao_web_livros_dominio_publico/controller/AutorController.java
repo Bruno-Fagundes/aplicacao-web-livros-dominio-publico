@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/autores")
+@RequestMapping("/autores")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class AutorController {
 
     private final AutorService autorService;
 
-    @GetMapping("/listar")
+    @GetMapping("")
     public List<AutorDto> listarTodosOsAutores() {
         return autorService.listarTodosOsAutores();
     }
