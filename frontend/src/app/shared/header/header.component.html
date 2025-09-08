@@ -15,10 +15,66 @@
 
     <div class="search-and-user">
       <div class="search-bar">
-        <input type="text" placeholder="PESQUISAR" />
-        <button aria-label="Pesquisar">
+        <input
+          type="text"
+          placeholder="PESQUISAR"
+          [(ngModel)]="termoBusca"
+          (keyup)="onTyping()"
+          (keyup.enter)="onPesquisar()"
+          (focus)="onTyping()"
+        />
+        <button aria-label="Pesquisar" (click)="onPesquisar()">
           <img src="/assets/images/icones/buscar_icon.svg" alt="Buscar" />
         </button>
+      </div>
+
+      <div class="search-suggestions" *ngIf="mostrarSugestoes">
+        <ng-container
+          *ngIf="sugestoesLivros.length > 0 || sugestoesAutores.length > 0"
+        >
+          <ul class="suggestions-list">
+            <ng-container *ngIf="sugestoesLivros.length > 0">
+              <li class="section-title">Livros</li>
+              <li
+                *ngFor="let livro of sugestoesLivros"
+                (click)="onSugestaoClick('livro', livro.livroId)"
+              >
+                <a [routerLink]="['/livros', livro.livroId]">
+                  <img
+                    [src]="livro.urlCapa"
+                    alt="Capa do livro"
+                    class="suggestion-img"
+                  />
+                  <div class="suggestion-info">
+                    <span class="suggestion-title">{{ livro.titulo }}</span>
+                    <span class="suggestion-author">{{
+                      livro.autor.nome
+                    }}</span>
+                  </div>
+                </a>
+              </li>
+            </ng-container>
+
+            <ng-container *ngIf="sugestoesAutores.length > 0">
+              <li class="section-title">Autores</li>
+              <li
+                *ngFor="let autor of sugestoesAutores"
+                (click)="onSugestaoClick('autor', autor.autorId)"
+              >
+                <a [routerLink]="['/autores', autor.autorId]">
+                  <img
+                    [src]="autor.urlFoto"
+                    alt="Foto do autor"
+                    class="suggestion-img"
+                  />
+                  <div class="suggestion-info">
+                    <span class="suggestion-title">{{ autor.nome }}</span>
+                  </div>
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </ng-container>
       </div>
 
       <div class="usuario-button">

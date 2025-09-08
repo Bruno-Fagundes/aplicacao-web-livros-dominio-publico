@@ -1,1 +1,40 @@
+<div class="container-homepage">
+  <div class="section-livros">
+    <div class="header-livros">
+      <h2 class="titulo-livros">LIVROS</h2>
+    </div>
 
+    <div class="filtros-wrapper">
+      <app-livro-filtros
+        (livrosFiltrados)="onLivrosFiltrados($event)"
+        [page]="page"
+        [size]="size"
+      ></app-livro-filtros>
+    </div>
+
+    <div class="livros-grid">
+      <div *ngFor="let livro of livros" class="livro-card">
+        <a [routerLink]="['/livros', livro.livroId]">
+          <img
+            [src]="livro.urlCapa"
+            [alt]="'Capa do livro ' + livro.titulo"
+            class="capa-livro"
+          />
+          <div class="livro-info">
+            <h3>{{ livro.titulo }}</h3>
+            <p>{{ livro.anoPublicacao }}</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <button
+      (click)="carregarMaisLivros()"
+      [disabled]="lastPage"
+      *ngIf="livros.length > 0"
+      class="btn btn-secondary btn-carregar-mais"
+    >
+      Carregar Mais
+    </button>
+  </div>
+</div>

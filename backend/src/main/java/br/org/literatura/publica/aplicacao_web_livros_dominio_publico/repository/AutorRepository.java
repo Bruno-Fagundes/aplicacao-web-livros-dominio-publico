@@ -10,8 +10,6 @@ import java.util.Optional;
 
 public interface AutorRepository extends JpaRepository<Autor, Long> {
 
-    // Adicione esta query para buscar o autor e seus livros em uma única consulta.
-    // Isso evita o problema de N+1 e carrega os livros junto com o autor.
     @Query("SELECT a FROM Autor a LEFT JOIN FETCH a.livros WHERE a.autorId = :id")
     Optional<Autor> findByIdWithLivros(@Param("id") Long id);
 }

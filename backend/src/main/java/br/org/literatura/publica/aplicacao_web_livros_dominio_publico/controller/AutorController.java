@@ -31,4 +31,12 @@ public class AutorController {
         return autor.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/pagina")
+    public ResponseEntity<?> listarPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(autorService.listarPaginado(page, size));
+    }
+
 }

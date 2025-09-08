@@ -1,10 +1,9 @@
-// src/app/app-routing.module.ts
-import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-// importe aqui os seus componentes de rota, ex:
 import { PaginaInicialComponent } from '../app/components/pagina-inicial/pagina-inicial.component';
 import { LivroDetalhesComponent } from '../app/components/livro-detalhes/livro-detalhes.component';
+import { UsuarioDetalhesComponent } from './components/usuario-detalhes/usuario-detalhes.component';
+import { PlaylistDetalhesComponent } from './components/playlist-detalhes/playlist-detalhes.component';
 
 export const routes: Routes = [
     {
@@ -16,8 +15,13 @@ export const routes: Routes = [
         path: 'livro/:id',
         component: LivroDetalhesComponent,
         title: 'Detalhes do Livro'
-    }
-];
+    },
+    {
+        path: 'usuarios/:id',
+        component: UsuarioDetalhesComponent,
+        title: '{{ usuario.nome }} '
+    },
+    { path: 'playlists/:id', component: PlaylistDetalhesComponent },];
 
 // Onde você configura o roteamento principal (geralmente em main.ts)
 // Adicione a configuração de rolagem:

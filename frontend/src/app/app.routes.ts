@@ -1,6 +1,5 @@
-// src/app/app.routes.ts
-
 import { Routes } from '@angular/router';
+import { PlaylistDetalhesComponent } from './components/playlist-detalhes/playlist-detalhes.component';
 import { LoginComponent } from './components/login/login.component';
 import { CadastroComponent } from './components/cadastro/cadastro.component';
 import { PaginaInicialComponent } from './components/pagina-inicial/pagina-inicial.component';
@@ -15,13 +14,16 @@ import { inject } from '@angular/core';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { Router } from '@angular/router';
+import { ResultadosPesquisaComponent } from './components/resultados-pesquisa/resultados-pesquisa.component';
+import { PlaylistCriarComponent } from './components/playlist-criar/playlist-criar.component';
 
 export const routes: Routes = [
-    { path: '', component: PaginaInicialComponent }, // <-- Mudei para o topo
-    { path: 'login', component: LoginComponent },
-    { path: 'cadastro', component: CadastroComponent },
-    { path: 'usuarios/undefined', component: LoginComponent },
-    { path: 'pagina-inicial', component: PaginaInicialComponent },
+    { path: '', component: PaginaInicialComponent, title: 'Literatura Pública' }, // <-- Mudei para o topo
+    { path: 'login', component: LoginComponent, title: 'Login' },
+    { path: 'cadastro', component: CadastroComponent, title: 'Cadastro' },
+    { path: 'usuarios/undefined', component: LoginComponent, title: 'Login' },
+    { path: 'pesquisa', component: ResultadosPesquisaComponent },
+    { path: 'pagina-inicial', component: PaginaInicialComponent, title: 'Literatura Pública' },
     {
         path: 'livros/:id',
         component: LivroDetalhesComponent,
@@ -40,9 +42,12 @@ export const routes: Routes = [
             }
         },
     },
-    { path: 'livros', component: LivrosComponent },
+    { path: 'livros', component: LivrosComponent, title: 'Livros' },
     { path: 'autores/:id', component: AutorDetalhesComponent },
-    { path: 'autores', component: AutoresComponent },
+    { path: 'autores', component: AutoresComponent, title: 'Autores' },
     { path: 'usuarios/:id', component: UsuarioDetalhesComponent },
-    { path: '**', component: PaginaInicialComponent },
+    { path: 'playlists/criar', component: PlaylistCriarComponent, title: 'Criar Playlist' },
+    // antes: { path: 'playlists/:id/usuarios/:id', ... }  <-- não use :id repetido
+    { path: 'playlists/:playlistId/usuarios/:usuarioId', component: PlaylistDetalhesComponent, title: 'Playlist' },
+    { path: '**', component: PaginaInicialComponent, title: 'Literatura Pública' } // Rota curinga para redirecionar para a página inicial,
 ];

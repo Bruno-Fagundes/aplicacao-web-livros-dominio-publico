@@ -1,10 +1,14 @@
+// playlist.interface.ts
+
 export interface Playlist {
     playlistId: number;
-    usuario: Usuario[];
+    usuario: UsuarioResumo;   // <-- objeto, não array
     titulo: string;
-    descricao: string;
+    descricao: string | null;
     qtdeLivros: number;
-    imagemUrl: string;
+    imagemUrl: string | null;
+    criadoEm: string;        // LocalDateTime vem como string no JSON
+    atualizadoEm: string;    // LocalDateTime vem como string no JSON
     livros: Livro[];
 }
 
@@ -15,30 +19,25 @@ export interface Livro {
     titulo: string;
     genero: string;
     subgenero: string;
-    sinopse: string;
-    anoPublicacao: number;
-    nota: number;
-    totalPaginas: number;
-    autor: Autor[];
+    sinopse: string | null;
+    anoPublicacao: number | null;
+    nota: number | null;
+    totalPaginas: number | null;
+    autor?: Autor[] | null;
 }
 
 export interface Autor {
     autorId: number;
     nome: string;
-    biografia: string;
-    dataNascimento: Date;
-    dataFalecimento: Date;
-    urlFoto: string;
-    livros: Livro[];
+    biografia?: string | null;
+    dataNascimento?: string | null;
+    dataFalecimento?: string | null;
+    urlFoto?: string | null;
+    livros?: Livro[] | null;
 }
 
-export interface Usuario {
-    usuarioId: number;
-    nome: string;
-    email: string;
-    senha: string;
-    dataCadastro: Date;
-    fotoPerfilUrl: "/frontend/public/assets/images/foto-perfil-usuario/foto-usuario.svg" | string;
-    livrosFavoritos: Livro[];
-    playlists: Playlist[];
-}   
+export interface UsuarioResumo {
+    usuarioId: number;        // usa usuarioId conforme o backend
+    nomeUsuario: string;
+    fotoPerfilUrl?: string | null;
+}

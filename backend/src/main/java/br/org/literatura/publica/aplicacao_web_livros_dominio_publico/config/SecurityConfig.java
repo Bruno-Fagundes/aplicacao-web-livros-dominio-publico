@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/usuarios/**").permitAll()
                         .requestMatchers("/autores/**").permitAll()
+                        .requestMatchers("/playlists/**").permitAll()
                         .requestMatchers("/assets/**", "/static/**", "/api/livros/pdf/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

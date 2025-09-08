@@ -19,7 +19,6 @@
           [src]="livro.urlCapa"
           [alt]="'Capa do livro ' + livro.titulo"
           class="capa-livro"
-          (error)="onImageError($event)"
         />
       </div>
       <div class="info-container">
@@ -58,9 +57,7 @@
         </div>
         <div class="detalhe-item">
           <span class="label">Nota:</span>
-          <div class="rating">
-            <span>{{ livro.nota }}</span>
-          </div>
+          <span class="rating">{{ livro.nota }}</span>
         </div>
       </div>
     </div>

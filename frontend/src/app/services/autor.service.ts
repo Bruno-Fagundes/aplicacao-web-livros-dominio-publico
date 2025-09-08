@@ -1,3 +1,4 @@
+// src/app/services/autor.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,7 +8,7 @@ import { AutorDetalhes } from '../interfaces/autor.interface';
     providedIn: 'root'
 })
 export class AutorService {
-    private apiUrl = 'http://localhost:8080/api/autores'; // URL base da sua API de autores
+    private apiUrl = 'http://localhost:8080/autores';
     currentUser$: any;
 
     constructor(private http: HttpClient) { }
@@ -17,6 +18,10 @@ export class AutorService {
     }
 
     listarAutores(): Observable<AutorDetalhes[]> {
-        return this.http.get<AutorDetalhes[]>(`${this.apiUrl}/listar`);
+        return this.http.get<AutorDetalhes[]>(`${this.apiUrl}`);
+    }
+
+    listarAutoresPaginados(page: number, size: number) {
+        return this.http.get<any>(`${this.apiUrl}/pagina?page=${page}&size=${size}`);
     }
 }

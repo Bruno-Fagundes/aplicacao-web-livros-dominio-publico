@@ -7,6 +7,9 @@ import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model.Auto
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model.Livro;
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.repository.AutorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -46,8 +49,6 @@ public class AutorService {
         dto.setDataFalecimento(autor.getDataFalecimento());
         dto.setUrlFoto(autor.getUrlFoto());
 
-        // Mapeia a lista de livros do autor para LivroDto
-        // Adiciona uma verificação para garantir que a lista de livros não seja nula
         List<LivroDto> livrosDto = autor.getLivros() != null ? autor.getLivros().stream()
                 .map(this::converterParaLivroDto)
                 .collect(Collectors.toList()) : Collections.emptyList(); // Retorna uma lista vazia se for nulo
@@ -57,13 +58,6 @@ public class AutorService {
         return dto;
     }
 
-    /**
-     * Método auxiliar para converter uma entidade Livro em um LivroDto completo.
-     * Esta conversão preenche todos os campos do DTO.
-     * 
-     * @param livro A entidade Livro.
-     * @return O LivroDto correspondente.
-     */
     private LivroDto converterParaLivroDto(Livro livro) {
         LivroDto dto = new LivroDto();
         dto.setLivroId(livro.getLivroId());
@@ -77,7 +71,12 @@ public class AutorService {
         dto.setTotalPaginas(livro.getTotalPaginas());
         dto.setUrlPdf(livro.getUrlPdf());
 
-        // Note que o autor não é setado aqui para evitar uma referência circular
         return dto;
+    }
+
+    public Page<AutorDto> listarPaginado(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Autor> pagina = autorRepository.findAll(pageable);
+        return pagina.map(this::converterParaAutorDto);
     }
 }

@@ -1,17 +1,16 @@
 export interface Usuario {
     id?: number;
-    nome?: string; // Tornar opcional
     nomeUsuario: string;
     email: string;
     senha: string;
     confirmarSenha?: string;
-
-    // As propriedades a seguir não são fornecidas no momento do cadastro,
-    // então devem ser opcionais.
     dataCadastro?: Date;
     fotoPerfilUrl?: string;
     livrosFavoritos?: any[];
     playlists?: any[];
+    livrosLidos?: number; // ⭐️ O tipo correto é number, não array
+    paginasLidas?: number;
+    generoFavorito?: string;
 }
 
 // src/app/interfaces/playlist.interface.ts

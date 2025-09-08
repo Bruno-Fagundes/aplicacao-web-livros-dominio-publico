@@ -1,0 +1,85 @@
+<!-- Loading -->
+<div *ngIf="carregando" class="loading-container">
+  <div class="spinner"></div>
+  <p>Carregando detalhes da playlist...</p>
+</div>
+
+<!-- Erro -->
+<div *ngIf="erro && !carregando" class="error-container">
+  <h2>Erro ao carregar a playlist</h2>
+  <p>
+    {{
+      erroMsg ||
+        "Não foi possível encontrar os detalhes da playlist solicitada."
+    }}
+  </p>
+  <button (click)="carregarPlaylist()" class="btn-retry">
+    Tentar Novamente
+  </button>
+</div>
+
+<!-- Conteúdo -->
+<div
+  *ngIf="playlist && !carregando && !erro"
+  class="playlist-detalhes container"
+>
+  <div class="playlist-header">
+    <div class="capa-container">
+      <img
+        [src]="getCapaUrl()"
+        (error)="onImageErrorCover($event)"
+        [alt]="'Capa da playlist ' + playlist.titulo"
+        class="capa-playlist"
+        loading="lazy"
+      />
+    </div>
+
+    <div class="info-container">
+      <h1 class="titulo-playlist">{{ playlist.titulo }}</h1>
+      <p class="descricao-playlist" *ngIf="playlist.descricao">
+        {{ playlist.descricao }}
+      </p>
+
+      <div class="meta-info">
+        <p>
+          Criado por:
+          <strong>
+            <a [routerLink]="['/usuarios', playlist.usuario.usuarioId]">
+              {{ playlist.usuario.nomeUsuario || "Usuário Desconhecido" }}
+            </a>
+          </strong>
+        </p>
+        <p>
+          Livros:
+          <strong>{{
+            playlist.qtdeLivros ||
+              (playlist.livros && playlist.livros.length) ||
+              0
+          }}</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="livros-section"
+    *ngIf="playlist.livros && playlist.livros.length > 0"
+  >
+    <h3>Livros nesta Playlist</h3>
+    <div class="livros-grid">
+      <div *ngFor="let livro of playlist.livros" class="livro-card">
+        <a [routerLink]="['/livros', livro.livroId]">
+          <img
+            [src]="livro.urlCapa"
+            [alt]="'Capa do livro ' + livro.titulo"
+            class="capa-livro"
+          />
+          <div class="livro-info">
+            <h3>{{ livro.titulo }}</h3>
+            <p>Nota: {{ livro.nota || 0 | number : "1.1-1" }}</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
