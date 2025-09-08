@@ -1,0 +1,113 @@
+/* básico para layout do detalhe de playlist */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.playlist-header {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.capa-container {
+  flex-shrink: 0;
+  width: 240px;
+}
+
+.capa-playlist {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.info-container {
+  flex: 1;
+}
+
+.titulo-playlist {
+  font-size: 2em;
+  margin: 0 0 10px 0;
+}
+
+.descricao-playlist {
+  font-size: 1.05em;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.meta-info p {
+  margin: 6px 0;
+  color: #555;
+}
+
+/* livros */
+.livros-section {
+  margin-top: 20px;
+}
+
+.livros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.livro-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+  transition: transform .2s ease;
+}
+
+.livro-card:hover { transform: translateY(-6px); }
+
+.capa-livro {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+.livro-info {
+  padding: 12px;
+  text-align: center;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #dc2626;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.btn-retry {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}

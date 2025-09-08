@@ -1,7 +1,10 @@
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.time.LocalDateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LivroDto {
 
     private Long livroId;
@@ -34,7 +37,6 @@ public class LivroDto {
         this.urlPdf = urlPdf;
     }
 
-    // Getters e Setters
     public Long getLivroId() {
         return livroId;
     }

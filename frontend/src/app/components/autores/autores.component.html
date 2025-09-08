@@ -1,0 +1,43 @@
+<div class="container-homepage">
+  <div class="autor-container">
+    <div *ngIf="carregando" class="loading-container">
+      <div class="spinner"></div>
+      <p>Carregando autores...</p>
+    </div>
+
+    <div *ngIf="erro && !carregando" class="error-container">
+      <h2>Erro ao carregar a página</h2>
+      <p>
+        Não foi possível carregar os autores. Por favor, tente novamente mais
+        tarde.
+      </p>
+      <button (click)="carregarAutores()" class="btn-retry">
+        Tentar Novamente
+      </button>
+    </div>
+
+    <ng-container *ngIf="!carregando && !erro">
+      <div class="section-autores">
+        <h2>AUTORES</h2>
+        <app-autor-filtros (ordenar)="onOrdenar($event)"></app-autor-filtros>
+        <div class="autores-grid">
+          <div *ngFor="let autor of autoresExibidos" class="autor-card">
+            <a [routerLink]="['/autores', autor.autorId]">
+              <img
+                [src]="autor.urlFoto"
+                [alt]="'Foto do autor ' + autor.nome"
+                class="foto-autor"
+              />
+              <div class="autor-info">
+                <h3>{{ autor.nome }}</h3>
+                <p *ngIf="criterioOrdenacaoAtual?.includes('livros')">
+                  {{ autor.livros.length }} livros
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

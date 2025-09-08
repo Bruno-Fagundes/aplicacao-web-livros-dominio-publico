@@ -1,17 +1,83 @@
-<div class="container">
+<div class="container" *ngIf="usuario">
   <div class="usuario-header">
-    <img
-      [src]="usuario?.fotoPerfilUrl"
-      [alt]="'Foto de perfil de ' + usuario?.nome"
-      class="foto-perfil"
-      (error)="onImageError($event)"
-    />
+    <div class="foto-playlists">
+      <div class="foto-container">
+        <img
+          [src]="getFotoPerfilUrl(usuario?.fotoPerfilUrl)"
+          [alt]="'Foto de perfil de ' + usuario.nomeUsuario"
+          class="foto-perfil"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <!-- Informações do usuário (nome, etc.) -->
+    <div class="info-container">
+      <h1 class="nome-usuario">{{ usuario.nomeUsuario }}</h1>
+    </div>
+  </div>
+
+  <!-- ... resto do template (estatísticas / playlists) ... -->
+
+  <div class="playlists-section">
+    <h3>Playlists</h3>
+
+    <div class="playlists-grid">
+      <!-- Card de adicionar playlist -->
+      <a routerLink="/playlists/criar" class="logo-link">
+        <img
+          src="/assets/images/icones/adicionar_playlist.svg"
+          alt="Adicionar playlist"
+          class="capa-playlist"
+          loading="lazy"
+        />
+        <div class="playlist-info"><h4>Criar nova</h4></div>
+      </a>
+
+      <!-- playlists grandes -->
+      <ng-container *ngIf="playlists?.length; else semPlaylists">
+        <div *ngFor="let playlist of playlists" class="playlist-card">
+          <a
+            [routerLink]="[
+              '/playlists',
+              playlist.playlistId,
+              'usuarios',
+              usuario.id
+            ]"
+          >
+            <img
+              [src]="
+                (playlist.livros?.length ? playlist.livros[0].urlCapa : null) ||
+                playlist.imagemUrl ||
+                'assets/images/fallbacks/capa-playlist-fallback.png'
+              "
+              [alt]="'Capa da playlist ' + playlist.titulo"
+              class="capa-playlist"
+              loading="lazy"
+            />
+            <div class="playlist-info">
+              <h4>{{ playlist.titulo }}</h4>
+              <p>
+                {{ playlist.qtdeLivros || playlist.livros?.length || 0 }}
+                livro{{
+                  (playlist.qtdeLivros || playlist.livros?.length || 0) === 1
+                    ? ""
+                    : "s"
+                }}
+              </p>
+            </div>
+          </a>
+        </div>
+      </ng-container>
+
+      <ng-template #semPlaylists>
+        <div
+          class="sem-playlists"
+          style="grid-column: 1 / -1; text-align: center"
+        >
+          <p>Não há playlists públicas criadas por este usuário.</p>
+        </div>
+      </ng-template>
+    </div>
   </div>
 </div>
-
-<p class="nome-usuario">{{ usuario?.nome }}</p>
-
-<p>
-  Livros lidos, Livros avaliados, playlists criadas, quantas paginas o usuario
-  leu, genero favorito
-</p>

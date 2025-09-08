@@ -36,6 +36,17 @@
         </div>
       </div>
 
+      <!-- Paginação Livros -->
+      <div class="pagination" *ngIf="totalPaginasLivros > 1">
+        <button
+          *ngFor="let page of [].constructor(totalPaginasLivros); let i = index"
+          (click)="carregarLivrosPopulares(i)"
+          [class.active]="i === paginaLivros"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+
       <div class="section-autores">
         <h2>AUTORES POPULARES</h2>
         <div class="autores-grid">
@@ -52,6 +63,20 @@
             </a>
           </div>
         </div>
+      </div>
+
+      <!-- Paginação Autores -->
+      <div class="pagination" *ngIf="totalPaginasAutores > 1">
+        <button
+          *ngFor="
+            let page of [].constructor(totalPaginasAutores);
+            let i = index
+          "
+          (click)="carregarAutoresPopulares(i)"
+          [class.active]="i === paginaAutores"
+        >
+          {{ i + 1 }}
+        </button>
       </div>
     </ng-container>
   </div>

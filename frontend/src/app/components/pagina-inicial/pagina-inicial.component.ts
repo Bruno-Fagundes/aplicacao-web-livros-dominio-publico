@@ -22,6 +22,16 @@ export class PaginaInicialComponent implements OnInit, OnDestroy {
   livrosPopulares: LivroDetalhes[] = [];
   autoresPopulares: AutorDetalhes[] = [];
 
+  paginaLivros: number = 0;
+  totalPaginasLivros: number = 0;
+  tamanhoPaginaLivros: number = 12; // 4 colunas x 3 linhas
+
+  // Paginação autores
+  paginaAutores: number = 0;
+  totalPaginasAutores: number = 0;
+  tamanhoPaginaAutores: number = 12; // também 4x3
+
+
   usuarioLogado: Usuario | null = null;
   private destroy$ = new Subject<void>();
 
@@ -47,12 +57,14 @@ export class PaginaInicialComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  carregarLivrosPopulares(): void {
+  carregarLivrosPopulares(pagina: number = 0): void {
     this.carregando = true;
     this.erro = false;
-    this.livroService.listarLivros().subscribe({
-      next: (livros) => {
-        this.livrosPopulares = livros;
+    this.livroService.listarLivrosPaginados(pagina, this.tamanhoPaginaLivros).subscribe({
+      next: (res) => {
+        this.livrosPopulares = res.content;
+        this.paginaLivros = res.number;
+        this.totalPaginasLivros = res.totalPages;
         this.carregando = false;
       },
       error: (err) => {
@@ -63,14 +75,17 @@ export class PaginaInicialComponent implements OnInit, OnDestroy {
     });
   }
 
-  carregarAutoresPopulares(): void {
-    this.autorService.listarAutores().subscribe({
-      next: (autores) => {
-        this.autoresPopulares = autores;
+  carregarAutoresPopulares(pagina: number = 0): void {
+    this.autorService.listarAutoresPaginados(pagina, this.tamanhoPaginaAutores).subscribe({
+      next: (res) => {
+        this.autoresPopulares = res.content;
+        this.paginaAutores = res.number;
+        this.totalPaginasAutores = res.totalPages;
       },
       error: (err) => {
         console.error('Erro ao carregar autores populares:', err);
       }
     });
   }
+
 }

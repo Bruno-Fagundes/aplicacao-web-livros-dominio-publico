@@ -3,6 +3,7 @@ package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto;
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model.StatusUsuario;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UsuarioDto {
 
@@ -16,6 +17,7 @@ public class UsuarioDto {
     private LocalDateTime atualizadoEm;
     private LocalDateTime criadoEm;
     private LocalDateTime ultimoAcesso;
+    private List<PlaylistDto> playlists;
 
     public UsuarioDto () {
         super();
@@ -110,4 +112,8 @@ public class UsuarioDto {
     public void setUltimoAcesso(LocalDateTime ultimoAcesso) {
         this.ultimoAcesso = ultimoAcesso;
     }
+
+    public List<PlaylistDto> getPlaylists() { return playlists; }
+
+    public void setPlaylists(List<PlaylistDto> playlists) { this.playlists = playlists; }
 }

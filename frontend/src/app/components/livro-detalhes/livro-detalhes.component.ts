@@ -34,7 +34,6 @@ export class LivroDetalhesComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // Busca o livro que foi resolvido pela rota
     this.route.data
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -42,7 +41,7 @@ export class LivroDetalhesComponent implements OnInit, OnDestroy {
           this.livro = livro;
           this.carregando = false;
           if (this.livro) {
-            this.title.setTitle(this.livro.titulo + ' — Literatura Pública');
+            this.title.setTitle(this.livro.titulo);
           } else {
             // Se o resolver retornou nulo, indica um erro
             this.erro = true;

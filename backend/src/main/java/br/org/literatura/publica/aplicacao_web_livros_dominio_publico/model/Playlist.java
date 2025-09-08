@@ -73,11 +73,9 @@ public class Playlist {
         this.descricao = descricao;
     }
 
-    public int getQtde_livros() {
-        return qtdeLivros;
-    }
+    public int getQtdeLivros() { return qtdeLivros; }
 
-    public void setQtde_livros(int qtde_livros) {
+    public void setQtdeLivros(int qtde_livros) {
         this.qtdeLivros = qtde_livros;
     }
 
@@ -89,7 +87,7 @@ public class Playlist {
         this.imagemUrl = imagemUrl;
     }
 
-    public LocalDateTime getCriado_em() {
+    public LocalDateTime getCriadoEm() {
         return criadoEm;
     }
 
