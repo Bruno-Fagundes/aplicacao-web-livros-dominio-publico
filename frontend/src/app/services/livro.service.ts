@@ -1,4 +1,3 @@
-// src/app/services/livro.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -24,7 +23,7 @@ export class LivroService {
         return `${this.apiUrl}/pdf/${nomeArquivo}`;
     }
 
-    listarLivrosPaginados(page: number, size: number) {
+    listarLivrosPaginados(page: number, size: number): Observable<any> {
         return this.http.get<any>(`${this.apiUrl}/pagina?page=${page}&size=${size}`);
     }
 }

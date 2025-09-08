@@ -42,11 +42,7 @@
 
     <div class="preview" *ngIf="imagemPreview">
       <p>Preview da capa:</p>
-      <img
-        [src]="imagemPreview"
-        alt="Preview da imagem da playlist"
-        (error)="imagemPreview = null"
-      />
+      <img [src]="imagemPreview" alt="Preview da imagem da playlist" />
     </div>
 
     <div class="actions">
