@@ -76,12 +76,11 @@ export class PlaylistCriarComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // <<< AQUI: usamos o payload que o backend espera, não um Playlist completo >>>
     const payload: CriarPlaylistPayload = {
       usuarioId: this.usuarioIdLogado,
       titulo: this.form.value.titulo,
       descricao: this.form.value.descricao?.trim() || null,
-      imagemUrl: this.form.value.imagemUrl?.trim() || null
+      imagemUrl: this.form.value.imagemUrl?.trim() || 'assets/images/capa-playlist/capa-playlist.svg'
     };
 
     this.carregando = true;

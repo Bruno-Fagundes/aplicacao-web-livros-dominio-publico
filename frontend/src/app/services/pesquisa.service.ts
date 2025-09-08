@@ -1,4 +1,3 @@
-// src/app/services/pesquisa.service.ts
 import { Injectable } from '@angular/core';
 import { LivroService } from './livro.service';
 import { AutorService } from './autor.service';
@@ -16,6 +15,18 @@ export class PesquisaService {
         private livroService: LivroService,
         private autorService: AutorService
     ) { }
+
+    buscarLivrosPorTitulo(termo: string): Observable<LivroDetalhes[]> {
+        const termoLowerCase = termo.toLowerCase();
+        return this.livroService.listarLivros().pipe(
+            map(livros => {
+                // Filtra os livros localmente
+                return livros.filter(livro =>
+                    livro.titulo.toLowerCase().includes(termoLowerCase)
+                );
+            })
+        );
+    }
 
     buscarPorTermo(termo: string): Observable<{ livros: LivroDetalhes[], autores: AutorDetalhes[] }> {
         const termoLowerCase = termo.toLowerCase();

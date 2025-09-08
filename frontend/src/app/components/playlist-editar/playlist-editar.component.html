@@ -1,0 +1,29 @@
+<div class="container">
+  <h2>Editar Playlist</h2>
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+    <div>
+      <label>Título</label>
+      <input formControlName="titulo" />
+      <div *ngIf="form.get('titulo')?.invalid && form.get('titulo')?.touched">
+        Título obrigatório.
+      </div>
+    </div>
+
+    <div>
+      <label>Descrição</label>
+      <textarea formControlName="descricao"></textarea>
+    </div>
+
+    <div>
+      <label>Imagem (URL)</label>
+      <input formControlName="imagemUrl" />
+    </div>
+
+    <div style="margin-top: 12px">
+      <button type="submit" class="btn btn-primary">Salvar</button>
+      <button type="button" class="btn" (click)="cancelar()">Cancelar</button>
+    </div>
+
+    <div *ngIf="erroMsg" class="error-container">{{ erroMsg }}</div>
+  </form>
+</div>
