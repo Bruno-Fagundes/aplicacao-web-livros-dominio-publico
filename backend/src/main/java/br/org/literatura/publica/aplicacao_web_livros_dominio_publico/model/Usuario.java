@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter // Adicionado para evitar código repetitivo de getters
+@Getter 
 @Setter
 @ToString(exclude = {"listaDeLeituras", "playlists"})
 @Table(name = "usuarios")

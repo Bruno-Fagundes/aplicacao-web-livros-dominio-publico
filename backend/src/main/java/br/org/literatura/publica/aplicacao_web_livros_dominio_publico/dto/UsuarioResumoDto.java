@@ -16,7 +16,6 @@ public class UsuarioResumoDto {
         this.fotoPerfilUrl = fotoPerfilUrl;
     }
 
-    // Getters e Setters
     public Long getUsuarioId() {
         return usuarioId;
     }

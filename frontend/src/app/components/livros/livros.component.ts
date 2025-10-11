@@ -21,9 +21,8 @@ export class LivrosComponent implements OnInit, OnDestroy {
   erro: boolean = false;
   livros: LivroDetalhes[] = [];
 
-  // Variáveis para paginação
   page: number = 0;
-  size: number = 12; // Número de livros por página
+  size: number = 12;
   lastPage: boolean = false;
 
   usuarioLogado: Usuario | null = null;
@@ -42,7 +41,6 @@ export class LivrosComponent implements OnInit, OnDestroy {
   }
 
   onLivrosFiltrados(response: any) {
-    // ⭐️ Aqui, você decide se adiciona mais livros ou reseta a lista
     if (this.page === 0) {
       this.livros = response.content;
     } else {

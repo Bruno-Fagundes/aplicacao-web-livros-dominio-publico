@@ -1,12 +1,13 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { Router } from "@angular/router";
-import { AuthService, AuthResponse } from "../../services/auth.service";
+import { Router, ActivatedRoute } from "@angular/router";
+import { AuthService } from "../../services/auth.service";
+import { AuthResponse } from "../../interfaces/auth.interface";
 import { CommonModule } from "@angular/common";
 
 @Component({
@@ -16,15 +17,17 @@ import { CommonModule } from "@angular/common";
   imports: [CommonModule, ReactiveFormsModule],
   standalone: true,
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   loading = false;
   errorMessage = "";
+  tokenExpirado = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       nomeUsuarioOuEmail: ["", [Validators.required]],
@@ -32,48 +35,19 @@ export class LoginComponent {
     });
   }
 
-  // Método para testar conexão com backend
-  testarConexao() {
-    console.log('🧪 TESTANDO CONEXÃO COM BACKEND...');
-
-    // Teste direto com fetch
-    fetch('http://localhost:8080/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        nomeUsuarioOuEmail: 'teste',
-        senha: 'teste123'
-      })
-    })
-      .then(response => {
-        console.log('🔍 Response status:', response.status);
-        console.log('🔍 Response headers:', response.headers);
-        return response.text(); // Usar text() primeiro
-      })
-      .then(data => {
-        console.log('🔍 Response body (raw):', data);
-        try {
-          const jsonData = JSON.parse(data);
-          console.log('🔍 Response body (JSON):', jsonData);
-        } catch (e) {
-          console.log('🔍 Response is not JSON:', e);
-        }
-      })
-      .catch(error => {
-        console.error('🔍 Fetch error:', error);
-      });
+  ngOnInit(): void {
+    // Verificar se veio da expiração do token
+    this.route.queryParams.subscribe(params => {
+      if (params['expired'] === 'true') {
+        this.tokenExpirado = true;
+        this.errorMessage = "Sua sessão expirou. Por favor, faça login novamente.";
+      }
+    });
   }
 
   onSubmit() {
     this.errorMessage = "";
-
-    // Chamar teste no primeiro submit
-    if (!this.errorMessage) {
-      this.testarConexao();
-    }
+    this.tokenExpirado = false;
 
     if (!this.loginForm.valid) {
       this.errorMessage = "Usuário/E-mail ou Senha Inválidos";
@@ -81,48 +55,35 @@ export class LoginComponent {
     }
 
     this.loading = true;
-
     const loginData = {
       nomeUsuarioOuEmail: this.loginForm.value.nomeUsuarioOuEmail.trim(),
       senha: this.loginForm.value.senha
     };
 
-    console.log('🚀 Dados enviados:', loginData);
-    console.log('🌐 URL da API:', 'http://localhost:8080/api/auth/login');
-    console.log('🔧 AuthService login method exists:', typeof this.authService.login);
-
     this.authService.login(loginData).subscribe({
       next: (response: AuthResponse) => {
-        console.log('✅ Resposta do backend - TIPO:', typeof response);
-        console.log('✅ Resposta do backend - VALOR:', response);
-        console.log('✅ response.token existe?', !!response?.token);
-        console.log('✅ response.usuario existe?', !!response?.usuario);
-
         this.loading = false;
-
         if (response && response.token && response.usuario) {
-          console.log('✅ Login bem-sucedido, redirecionando...');
-          console.log('✅ Token:', response.token);
-          console.log('✅ Usuário:', response.usuario);
-          this.router.navigate(['/pagina-inicial']);
+          console.log('✅ Login bem-sucedido');
+
+          // Redirecionar para a página que o usuário estava tentando acessar
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/pagina-inicial';
+          this.router.navigate([returnUrl]);
         } else {
-          console.log('❌ Resposta inválida do backend');
-          console.log('❌ Token presente:', !!response?.token);
-          console.log('❌ Usuario presente:', !!response?.usuario);
-          this.errorMessage = "Usuário/E-mail ou Senha Inválidos";
+          this.errorMessage = "Resposta inválida do servidor";
         }
       },
       error: (err) => {
-        console.error('❌ ERRO DETALHADO:');
-        console.error('❌ err.status:', err.status);
-        console.error('❌ err.statusText:', err.statusText);
-        console.error('❌ err.error:', err.error);
-        console.error('❌ err.message:', err.message);
-        console.error('❌ err.url:', err.url);
-        console.error('❌ Erro completo:', err);
-
+        console.error('❌ Erro no login:', err);
         this.loading = false;
-        this.errorMessage = "Usuário/E-mail ou Senha Inválidos";
+
+        if (err.status === 401) {
+          this.errorMessage = "Usuário/E-mail ou Senha Inválidos";
+        } else if (err.status === 0) {
+          this.errorMessage = "Erro de conexão. Verifique se o servidor está rodando.";
+        } else {
+          this.errorMessage = "Erro ao fazer login. Tente novamente.";
+        }
       }
     });
   }

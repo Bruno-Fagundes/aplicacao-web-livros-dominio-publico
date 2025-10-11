@@ -1,15 +1,13 @@
-// WebConfig.java
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
+    
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -18,11 +16,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-
+    
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Servir arquivos PDF
-        registry.addResourceHandler("/pdfs/**")
-                .addResourceLocations("classpath:/static/pdfs/");
+        registry.addResourceHandler("/livros/pdf/**")
+                .addResourceLocations("classpath:/static/pdfs/livros/")
+                .setCachePeriod(3600);
     }
 }

@@ -30,14 +30,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
                 .csrf(csrf -> csrf.disable())
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/livros/**").permitAll()
+                        .requestMatchers("/livros/pdf/**").permitAll()  
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/usuarios/**").permitAll()
                         .requestMatchers("/autores/**").permitAll()

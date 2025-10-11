@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/playlists")
+@RequestMapping("/api/playlists")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class PlaylistController {
@@ -49,7 +49,6 @@ public class PlaylistController {
         }
     }
 
-    // Endpoint com paginação (novo)
     @GetMapping("/pagina")
     public ResponseEntity<Page<PlaylistDto>> listarPlaylistsPaginadas(
             @RequestParam(defaultValue = "0") int page,
@@ -59,15 +58,12 @@ public class PlaylistController {
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) Long usuarioId) {
 
-        // Definir direção da ordenação
         Sort.Direction direction = sortDirection.equalsIgnoreCase("desc")
                 ? Sort.Direction.DESC
                 : Sort.Direction.ASC;
 
-        // Criar Pageable
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        // Buscar playlists paginadas
         Page<PlaylistDto> playlists = playlistService.listarPlaylistsPaginadas(
                 pageable, titulo, usuarioId);
 
@@ -102,7 +98,6 @@ public class PlaylistController {
         }
     }
 
-    // Endpoints adicionais para gerenciar livros na playlist
     @PostMapping("/{playlistId}/livros/{livroId}")
     public ResponseEntity<PlaylistDto> adicionarLivroNaPlaylist(
             @PathVariable Long playlistId,
@@ -141,15 +136,12 @@ public class PlaylistController {
             @RequestParam(defaultValue = "criadoEm") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDirection) {
         try {
-            // Definir direção da ordenação
             Sort.Direction direction = sortDirection.equalsIgnoreCase("desc")
                     ? Sort.Direction.DESC
                     : Sort.Direction.ASC;
 
-            // Criar Pageable
             Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-            // Usar o método existente do service que já funciona
             Page<PlaylistDto> playlists = playlistService.listarPlaylistsPaginadas(
                     pageable, null, usuarioId);
 

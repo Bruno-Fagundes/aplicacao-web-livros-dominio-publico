@@ -8,20 +8,20 @@ import { AutorDetalhes } from '../interfaces/autor.interface';
     providedIn: 'root'
 })
 export class AutorService {
-    private apiUrl = 'http://localhost:8080/autores';
+    private baseUrl = 'http://localhost:8080/api/autores';
     currentUser$: any;
 
     constructor(private http: HttpClient) { }
 
     buscarDetalhesAutor(id: number): Observable<AutorDetalhes> {
-        return this.http.get<AutorDetalhes>(`${this.apiUrl}/${id}`);
+        return this.http.get<AutorDetalhes>(`${this.baseUrl}/${id}`);
     }
 
     listarAutores(): Observable<AutorDetalhes[]> {
-        return this.http.get<AutorDetalhes[]>(`${this.apiUrl}`);
+        return this.http.get<AutorDetalhes[]>(`${this.baseUrl}`);
     }
 
     listarAutoresPaginados(page: number, size: number) {
-        return this.http.get<any>(`${this.apiUrl}/pagina?page=${page}&size=${size}`);
+        return this.http.get<any>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
     }
 }

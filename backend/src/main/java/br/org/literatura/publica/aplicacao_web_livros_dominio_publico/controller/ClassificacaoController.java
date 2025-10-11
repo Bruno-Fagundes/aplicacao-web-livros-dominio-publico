@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/livros/{livroId}/classificacao")
+@RequestMapping("/api/livros/{livroId}/classificacao")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class ClassificacaoController {
@@ -28,6 +28,25 @@ public class ClassificacaoController {
             return ResponseEntity.badRequest().body(ex.getMessage());
         } catch (Exception ex) {
             return ResponseEntity.status(500).body("Erro interno: " + ex.getMessage());
+        }
+    }
+
+        // retorna a nota que o usuário deu para um livro (se houver)
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<ClassificacaoRequestDto> buscarNotaDoUsuario(
+        @PathVariable Long livroId,
+        @PathVariable Long usuarioId) {
+        try {
+            Integer nota = classificacaoService.buscarNotaUsuario(livroId, usuarioId); // retorne null se não existir
+            if (nota == null) {
+                return ResponseEntity.noContent().build(); // 204 => sem nota
+            }
+            ClassificacaoRequestDto dto = new ClassificacaoRequestDto();
+            dto.setUsuarioId(usuarioId);
+            dto.setNota(nota);
+            return ResponseEntity.ok(dto);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(null);
         }
     }
 

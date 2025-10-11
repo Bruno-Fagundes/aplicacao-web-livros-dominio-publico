@@ -21,7 +21,6 @@ public class AtualizarPlaylistDto {
         this.imagemUrl = imagemUrl;
     }
 
-    // Getters e Setters
     public String getTitulo() {
         return titulo;
     }

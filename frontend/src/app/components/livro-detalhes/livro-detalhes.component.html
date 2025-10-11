@@ -21,43 +21,58 @@
           class="capa-livro"
         />
       </div>
+
       <div class="info-container">
         <h1 class="titulo-livro">{{ livro.titulo }}</h1>
         <a [routerLink]="['/autores', livro.autor.autorId]">
           <h2 class="nome-autor">{{ livro.autor.nome }}</h2>
         </a>
+
         <div class="acoes">
-          <button (click)="continuarLendo()" class="btn btn-primary">
-            CONTINUAR LENDO
-          </button>
+          <!-- sempre visível -->
           <button (click)="lerDoInicio()" class="btn btn-secondary">
             LER DO INÍCIO
           </button>
+
+          <!-- só aparece para usuário autenticado -->
+          <button
+            *ngIf="isAuthenticated"
+            (click)="continuarLendo()"
+            class="btn btn-primary"
+          >
+            CONTINUAR LENDO
+          </button>
         </div>
+
+        <app-classificacao
+          *ngIf="livro"
+          [livroId]="livroId"
+          [usuarioId]="usuarioId"
+        ></app-classificacao>
       </div>
     </div>
 
     <div class="detalhes-section">
       <div class="detalhes-grid">
         <div class="detalhe-item">
-          <span class="label">Quantidade de Páginas:</span>
-          <span class="valor">{{ livro.totalPaginas }}</span>
+          <span class="label">Quantidade de Páginas:</span
+          ><span class="valor">{{ livro.totalPaginas }}</span>
         </div>
         <div class="detalhe-item">
-          <span class="label">Ano de Publicação:</span>
-          <span class="valor">{{ livro.anoPublicacao }}</span>
+          <span class="label">Ano de Publicação:</span
+          ><span class="valor">{{ livro.anoPublicacao }}</span>
         </div>
         <div class="detalhe-item">
-          <span class="label">Gênero:</span>
-          <span class="valor">{{ livro.genero }}</span>
+          <span class="label">Gênero:</span
+          ><span class="valor">{{ livro.genero }}</span>
         </div>
         <div class="detalhe-item">
-          <span class="label">Sub Gênero:</span>
-          <span class="valor">{{ livro.subgenero }}</span>
+          <span class="label">Sub Gênero:</span
+          ><span class="valor">{{ livro.subgenero }}</span>
         </div>
         <div class="detalhe-item">
-          <span class="label">Nota:</span>
-          <span class="rating">{{ livro.nota }}</span>
+          <span class="label">Nota:</span
+          ><span class="rating">{{ livro.nota }}</span>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class LivroDto {
 
     private Long livroId;
-    private AutorDto autor; // Referência para a nova DTO do autor
+    private AutorDto autor; 
     private String urlCapa;
     private String urlPdf;
     private String titulo;

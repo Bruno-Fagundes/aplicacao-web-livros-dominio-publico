@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, forkJoin, Observable } from 'rxjs';
 import { PlaylistService } from '../../services/playlist.service';
-import { Playlist } from '../../interfaces/playlist.interface';
+import { Playlist, Livro } from '../../interfaces/playlist.interface';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { PlaylistAdicionarLivroComponent } from '../playlist-adicionar-livro/playlist-adicionar-livro.component';
+import { ClassificacaoService } from '../../services/classificacao.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-playlist-detalhes',
@@ -20,19 +22,20 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
   erro = false;
   erroMsg = '';
 
-  // Propriedade para controlar o estado do modal
   mostrarModalAdicionarLivro = false;
 
   private destroy$ = new Subject<void>();
   private playlistId: number | null = null;
   private usuarioId: number | null = null;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private http: HttpClient,
-    private playlistService: PlaylistService
-  ) { }
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private playlistService = inject(PlaylistService);
+  private classificacaoService = inject(ClassificacaoService);
+  private authService = inject(AuthService);
+
+  constructor() { }
 
   ngOnInit(): void {
     this.route.paramMap
@@ -54,27 +57,23 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
     this.carregando = true;
     this.playlist = null;
 
+    let playlistObservable: Observable<Playlist>;
+
     if (this.usuarioId != null && this.playlistId != null) {
-      this.playlistService.buscarPlaylistPorUsuarioEId(this.usuarioId, this.playlistId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: p => this.onLoaded(p),
-          error: err => this.onLoadError(err)
-        });
+      playlistObservable = this.playlistService.buscarPlaylistPorUsuarioEId(this.usuarioId, this.playlistId);
+    } else if (this.playlistId != null) {
+      playlistObservable = this.playlistService.buscarPlaylistPorId(this.playlistId);
+    } else {
+      this.onLoadError({ status: 400, message: 'Parâmetros de rota inválidos' });
       return;
     }
 
-    if (this.playlistId != null) {
-      this.playlistService.buscarPlaylistPorId(this.playlistId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: p => this.onLoaded(p),
-          error: err => this.onLoadError(err)
-        });
-      return;
-    }
-
-    this.onLoadError({ status: 400, message: 'Parâmetros de rota inválidos' });
+    playlistObservable
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: p => this.onLoaded(p),
+        error: err => this.onLoadError(err)
+      });
   }
 
   private onLoaded(p: Playlist) {
@@ -84,6 +83,51 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
     this.playlist = p;
     this.carregando = false;
     this.erro = false;
+
+    this.carregarNotasDoUsuarioParaLivros();
+  }
+
+  private carregarNotasDoUsuarioParaLivros(): void {
+    if (!this.playlist || !this.playlist.livros || this.playlist.livros.length === 0) {
+      console.log('Sem livros na playlist para carregar notas');
+      return;
+    }
+
+    // ⭐️ OBTÉM O ID DO USUÁRIO LOGADO
+    const usuarioLogado = this.authService.getCurrentUser();
+    const usuarioLogadoId = usuarioLogado?.id ?? (usuarioLogado as any)?.id;
+
+    if (!usuarioLogadoId) {
+      console.log('Usuário não está logado - pulando carregamento de notas');
+      return;
+    }
+
+    console.log(`Carregando notas para ${this.playlist.livros.length} livros...`);
+    console.log('Usuario logado:', usuarioLogado);
+    console.log('Usuario logado ID:', usuarioLogadoId);
+
+    const requests = this.playlist.livros.map(livro => {
+      console.log(`Buscando nota para livroId=${livro.livroId}, usuarioId=${usuarioLogadoId}`);
+      return this.classificacaoService.buscarNotaDoUsuario(livro.livroId, usuarioLogadoId);
+    });
+
+    forkJoin(requests)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (classificacoes) => {
+          console.log('Notas recebidas:', classificacoes);
+
+          classificacoes.forEach((classificacao, index) => {
+            if (this.playlist && this.playlist.livros[index]) {
+              this.playlist.livros[index].notaDoUsuario = classificacao?.nota ?? null;
+              console.log(`Livro ${this.playlist.livros[index].titulo}: nota = ${this.playlist.livros[index].notaDoUsuario}`);
+            }
+          });
+        },
+        error: (err) => {
+          console.error("Erro ao carregar notas do usuário:", err);
+        }
+      });
   }
 
   private onLoadError(err: any) {
@@ -98,11 +142,10 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
     }
   }
 
-
   deletarPlaylist(): void {
     const confirmacao = confirm('Tem certeza que deseja deletar esta playlist?');
     if (confirmacao && this.playlist?.playlistId) {
-      this.http.delete(`http://localhost:8080/playlists/${this.playlist.playlistId}`).subscribe({
+      this.http.delete(`http://localhost:8080/api/playlists/${this.playlist.playlistId}`).subscribe({
         next: () => {
           alert('Playlist deletada com sucesso!');
           this.router.navigate(['/usuarios', this.playlist?.usuario?.usuarioId]);
@@ -113,26 +156,18 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   abrirModalAdicionarLivro(): void {
-    console.log('Botão clicado - abrindo modal...'); // ⭐️ Adicione esta linha
     this.mostrarModalAdicionarLivro = true;
-    console.log('mostrarModalAdicionarLivro:', this.mostrarModalAdicionarLivro); // ⭐️ E esta
   }
 
-  // Método para fechar o modal
   fecharModalAdicionarLivro(): void {
     this.mostrarModalAdicionarLivro = false;
   }
 
-  // Método para recarregar a playlist após adicionar um livro
   onLivroAdicionado(): void {
     this.fecharModalAdicionarLivro();
     this.carregarPlaylist();
-  }
-
-  testeClick(): void {
-    console.log('🧪 TESTE: Angular está funcionando!');
-    alert('Angular está funcionando! O problema não é o binding.');
   }
 
   getCapaUrl(): string {

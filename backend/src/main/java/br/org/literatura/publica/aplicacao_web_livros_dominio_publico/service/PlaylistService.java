@@ -87,21 +87,18 @@ public class PlaylistService {
 
     @Transactional
     public PlaylistDto criarPlaylist(CriarPlaylistDto playlistCreateDto) {
-        // Verificar se o usuário existe
         Usuario usuario = usuarioRepository.findById(playlistCreateDto.getUsuarioId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com ID: " + playlistCreateDto.getUsuarioId()));
 
-        // Criar nova playlist
         Playlist novaPlaylist = new Playlist();
         novaPlaylist.setUsuario(usuario);
         novaPlaylist.setTitulo(playlistCreateDto.getTitulo());
         novaPlaylist.setDescricao(playlistCreateDto.getDescricao());
         novaPlaylist.setImagemUrl(playlistCreateDto.getImagemUrl());
-        novaPlaylist.setQtdeLivros(0); // Inicialmente sem livros
+        novaPlaylist.setQtdeLivros(0); 
         novaPlaylist.setCriadoEm(LocalDateTime.now());
         novaPlaylist.setAtualizadoEm(LocalDateTime.now());
 
-        // Salvar no banco
         Playlist playlistSalva = playlistRepository.save(novaPlaylist);
 
         return converterParaPlaylistDto(playlistSalva);
@@ -111,7 +108,6 @@ public class PlaylistService {
     public Optional<PlaylistDto> editarPlaylist(Long id, AtualizarPlaylistDto playlistUpdateDto) {
         return playlistRepository.findById(id)
                 .map(playlist -> {
-                    // Atualizar apenas os campos não nulos
                     if (playlistUpdateDto.getTitulo() != null && !playlistUpdateDto.getTitulo().trim().isEmpty()) {
                         playlist.setTitulo(playlistUpdateDto.getTitulo());
                     }
@@ -124,7 +120,6 @@ public class PlaylistService {
 
                     playlist.setAtualizadoEm(LocalDateTime.now());
 
-                    // Salvar alterações
                     Playlist playlistAtualizada = playlistRepository.save(playlist);
                     return converterParaPlaylistDto(playlistAtualizada);
                 });
@@ -148,7 +143,6 @@ public class PlaylistService {
             Playlist playlist = playlistOpt.get();
             Livro livro = livroOpt.get();
 
-            // Verificar se o livro já está na playlist
             if (!playlist.getLivros().contains(livro)) {
                 playlist.getLivros().add(livro);
                 playlist.setQtdeLivros(playlist.getLivros().size());
@@ -211,7 +205,6 @@ public class PlaylistService {
     }
 
     public List<PlaylistDto> listarPlaylistsPorUsuario(Long usuarioId) {
-        // Assumindo que você tem um playlistRepository
         List<Playlist> playlists = playlistRepository.findByUsuario_UsuarioId(usuarioId);
         return playlists.stream()
                 .map(this::convertToDto)
@@ -219,12 +212,10 @@ public class PlaylistService {
     }
 
     public Optional<PlaylistDto> buscarPlaylistDoUsuario(Long usuarioId, Long playlistId) {
-        // Busca playlist específica que pertence ao usuário
         Optional<Playlist> playlist = playlistRepository.findByPlaylistIdAndUsuario_UsuarioId(playlistId, usuarioId);
         return playlist.map(this::convertToDto);
     }
 
-    // Método auxiliar para converter Playlist para PlaylistDto (se não existir ainda)
     private PlaylistDto convertToDto(Playlist playlist) {
         PlaylistDto dto = new PlaylistDto();
         dto.setPlaylistId(playlist.getPlaylistId());
@@ -235,19 +226,17 @@ public class PlaylistService {
         dto.setCriadoEm(playlist.getCriadoEm());
         dto.setAtualizadoEm(playlist.getAtualizadoEm());
 
-        // Converter Usuario para UsuarioResumoDto
         if (playlist.getUsuario() != null) {
             UsuarioResumoDto usuarioResumo = new UsuarioResumoDto();
-            usuarioResumo.setUsuarioId(playlist.getUsuario().getId()); // Usa getId() que retorna usuarioId
+            usuarioResumo.setUsuarioId(playlist.getUsuario().getId()); 
             usuarioResumo.setNomeUsuario(playlist.getUsuario().getNomeUsuario());
             usuarioResumo.setFotoPerfilUrl(playlist.getUsuario().getFotoPerfilUrl());
             dto.setUsuario(usuarioResumo);
         }
 
-        // Converter livros se necessário
         if (playlist.getLivros() != null) {
             List<LivroDto> livrosDto = playlist.getLivros().stream()
-                    .map(this::converterParaLivroDto) // Método que você já deve ter
+                    .map(this::converterParaLivroDto) 
                     .collect(Collectors.toList());
             dto.setLivros(livrosDto);
         }

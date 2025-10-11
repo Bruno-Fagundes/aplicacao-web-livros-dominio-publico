@@ -20,41 +20,41 @@ export interface PageResponse<T> {
     providedIn: 'root'
 })
 export class PlaylistService {
-    private apiUrl = 'http://localhost:8080/playlists';
+    private baseUrl = 'http://localhost:8080/api/playlists';
 
     constructor(private http: HttpClient) { }
 
     buscarPlaylistPorId(id: number): Observable<Playlist> {
-        return this.http.get<Playlist>(`${this.apiUrl}/${id}`);
+        return this.http.get<Playlist>(`${this.baseUrl}/${id}`);
     }
 
     listarPlaylists(): Observable<Playlist[]> {
-        return this.http.get<Playlist[]>(`${this.apiUrl}`);
+        return this.http.get<Playlist[]>(`${this.baseUrl}`);
     }
 
     criarPlaylist(payload: any): Observable<Playlist> {
-        return this.http.post<Playlist>(`${this.apiUrl}`, payload);
+        return this.http.post<Playlist>(`${this.baseUrl}`, payload);
     }
 
     atualizarPlaylist(id: number, payload: any): Observable<Playlist> {
-        return this.http.put<Playlist>(`${this.apiUrl}/${id}`, payload);
+        return this.http.put<Playlist>(`${this.baseUrl}/${id}`, payload);
     }
 
     deletarPlaylist(id: number): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/${id}`);
+        return this.http.delete<void>(`${this.baseUrl}/${id}`);
     }
 
     adicionarLivroNaPlaylist(playlistId: number, livroId: number): Observable<any> {
-        const url = `${this.apiUrl}/${playlistId}/livros/${livroId}`;
+        const url = `${this.baseUrl}/${playlistId}/livros/${livroId}`;
         return this.http.post(url, {});
     }
 
     listarPlaylistsPorUsuario(usuarioId: number, page = 0, size = 50): Observable<PageResponse<Playlist>> {
         const params = new HttpParams().set('page', String(page)).set('size', String(size));
-        return this.http.get<PageResponse<Playlist>>(`${this.apiUrl}/usuario/${usuarioId}`, { params });
+        return this.http.get<PageResponse<Playlist>>(`${this.baseUrl}/usuario/${usuarioId}`, { params });
     }
 
     buscarPlaylistPorUsuarioEId(usuarioId: number, playlistId: number): Observable<Playlist> {
-        return this.http.get<Playlist>(`${this.apiUrl}/usuario/${usuarioId}/playlist/${playlistId}`);
+        return this.http.get<Playlist>(`${this.baseUrl}/usuario/${usuarioId}/playlist/${playlistId}`);
     }
 }

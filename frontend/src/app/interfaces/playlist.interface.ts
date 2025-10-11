@@ -1,14 +1,12 @@
-// playlist.interface.ts
-
 export interface Playlist {
     playlistId: number;
-    usuario: UsuarioResumo;   // <-- objeto, não array
+    usuario: UsuarioResumo;
     titulo: string;
     descricao: string | null;
     qtdeLivros: number;
     imagemUrl: string | null;
-    criadoEm: string;        // LocalDateTime vem como string no JSON
-    atualizadoEm: string;    // LocalDateTime vem como string no JSON
+    criadoEm: string;
+    atualizadoEm: string;
     livros: Livro[];
 }
 
@@ -24,6 +22,7 @@ export interface Livro {
     nota: number | null;
     totalPaginas: number | null;
     autor?: Autor[] | null;
+    notaDoUsuario?: number | null;
 }
 
 export interface Autor {
@@ -37,7 +36,7 @@ export interface Autor {
 }
 
 export interface UsuarioResumo {
-    usuarioId: number;        // usa usuarioId conforme o backend
+    usuarioId: number;
     nomeUsuario: string;
     fotoPerfilUrl?: string | null;
 }

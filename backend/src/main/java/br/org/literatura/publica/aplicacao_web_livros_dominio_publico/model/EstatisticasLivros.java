@@ -14,7 +14,6 @@ public class EstatisticasLivros {
     @Column(name = "total_leitura")
     private Integer totalLeitura;
 
-    // aqui armazenamos a média das notas
     @Column(name = "total_avaliacao")
     private Double totalAvaliacao;
 

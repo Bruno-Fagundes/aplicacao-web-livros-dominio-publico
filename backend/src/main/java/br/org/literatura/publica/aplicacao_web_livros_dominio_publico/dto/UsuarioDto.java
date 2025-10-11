@@ -1,16 +1,22 @@
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto;
 
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.model.StatusUsuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UsuarioDto {
 
     private Long id;
     private String nomeUsuario;
     private String email;
+
+    @JsonIgnore
     private String senha;
+
     private StatusUsuario status;
     private String funcao;
     private String fotoPerfilUrl;
@@ -19,18 +25,17 @@ public class UsuarioDto {
     private LocalDateTime ultimoAcesso;
     private List<PlaylistDto> playlists;
 
-    public UsuarioDto () {
+    public UsuarioDto() {
         super();
     }
 
-    public UsuarioDto(Long id, String nomeUsuario, String email, StatusUsuario status, String funcao, String senha) {
+    public UsuarioDto(Long id, String nomeUsuario, String email, StatusUsuario status, String funcao) {
         this.id = id;
         this.nomeUsuario = nomeUsuario;
         this.email = email;
         this.status = status;
         this.funcao = funcao;
         this.fotoPerfilUrl = "/assets/images/foto-perfil-usuario/foto-perfil.png";
-        this.senha = senha;
     }
 
     public Long getId() {
@@ -113,7 +118,11 @@ public class UsuarioDto {
         this.ultimoAcesso = ultimoAcesso;
     }
 
-    public List<PlaylistDto> getPlaylists() { return playlists; }
+    public List<PlaylistDto> getPlaylists() {
+        return playlists;
+    }
 
-    public void setPlaylists(List<PlaylistDto> playlists) { this.playlists = playlists; }
+    public void setPlaylists(List<PlaylistDto> playlists) {
+        this.playlists = playlists;
+    }
 }

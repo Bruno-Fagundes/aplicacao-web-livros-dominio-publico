@@ -30,7 +30,6 @@ public interface LivroRepository  extends JpaRepository<Livro, Long>, JpaSpecifi
     @Query("SELECT DISTINCT l.subgenero FROM Livro l WHERE l.genero = :genero AND l.subgenero IS NOT NULL ORDER BY l.subgenero")
     List<String> findDistinctSubgenerosByGenero(@Param("genero") String genero);
 
-    // em LivroRepository
     @Query("SELECT DISTINCT l.subgenero FROM Livro l WHERE l.subgenero IS NOT NULL ORDER BY l.subgenero")
     List<String> findDistinctSubgeneros();
 

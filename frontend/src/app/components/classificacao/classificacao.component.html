@@ -1,0 +1,27 @@
+<div class="estrelas-interativas" (mouseleave)="onLeave()">
+  <ng-container *ngIf="usuarioId && usuarioId > 0; else loginMsg">
+    <div
+      *ngFor="let s of estrelas"
+      class="estrela-wrap"
+      role="button"
+      tabindex="0"
+      (click)="avaliar(s)"
+      (keydown.enter)="avaliar(s)"
+      (mouseenter)="onHover(s)"
+    >
+      <img
+        class="estrela-img"
+        [src]="
+          s <= notaAtual()
+            ? 'assets/images/icones/estrela-cheia.svg'
+            : 'assets/images/icones/estrela-vazia.svg'
+        "
+        alt="estrela"
+      />
+    </div>
+  </ng-container>
+
+  <ng-template #loginMsg>
+    <div class="login-msg">Faça login para avaliar.</div>
+  </ng-template>
+</div>
