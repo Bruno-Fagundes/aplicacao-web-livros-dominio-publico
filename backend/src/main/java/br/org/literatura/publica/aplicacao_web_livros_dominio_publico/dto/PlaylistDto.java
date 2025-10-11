@@ -6,7 +6,7 @@ import java.util.List;
 public class PlaylistDto {
 
     private long playlistId;
-    private UsuarioResumoDto usuario; // Mudança aqui - usar DTO resumido
+    private UsuarioResumoDto usuario; 
     private String titulo;
     private String descricao;
     private int qtdeLivros;
@@ -22,7 +22,6 @@ public class PlaylistDto {
         this.titulo = titulo;
     }
 
-    // Getters e Setters
     public long getPlaylistId() {
         return playlistId;
     }

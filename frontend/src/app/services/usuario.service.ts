@@ -11,16 +11,16 @@ export class UsuarioService {
     getById(arg0: number) {
         throw new Error('Method not implemented.');
     }
-    private apiUrl = 'http://localhost:8080/usuarios';
+    private baseUrl = 'http://localhost:8080/api/usuarios';
 
     constructor(private http: HttpClient) { }
 
     listarUsuarios(): Observable<Usuario[]> {
-        return this.http.get<Usuario[]>(`${this.apiUrl}`);
+        return this.http.get<Usuario[]>(`${this.baseUrl}`);
     }
 
     buscarUsuarioPorId(id: number): Observable<Usuario> {
-        return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
+        return this.http.get<Usuario>(`${this.baseUrl}/${id}`);
     }
 }
 

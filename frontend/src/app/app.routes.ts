@@ -16,6 +16,7 @@ import { EMPTY } from 'rxjs';
 import { Router } from '@angular/router';
 import { ResultadosPesquisaComponent } from './components/resultados-pesquisa/resultados-pesquisa.component';
 import { PlaylistCriarComponent } from './components/playlist-criar/playlist-criar.component';
+import { LivroLeituraComponent } from './components/livro-leitura/livro-leitura.component';
 
 export const routes: Routes = [
     { path: '', component: PaginaInicialComponent, title: 'Literatura Pública' }, // <-- Mudei para o topo
@@ -42,12 +43,17 @@ export const routes: Routes = [
             }
         },
     },
+    {
+        path: 'livros/leitura/:id',
+        loadComponent: () =>
+            import('./components/livro-leitura/livro-leitura.component').then(m => m.LivroLeituraComponent),
+        title: 'Leitura'
+    },
     { path: 'livros', component: LivrosComponent, title: 'Livros' },
     { path: 'autores/:id', component: AutorDetalhesComponent },
     { path: 'autores', component: AutoresComponent, title: 'Autores' },
     { path: 'usuarios/:id', component: UsuarioDetalhesComponent },
     { path: 'playlists/criar', component: PlaylistCriarComponent, title: 'Criar Playlist' },
-    // antes: { path: 'playlists/:id/usuarios/:id', ... }  <-- não use :id repetido
     { path: 'playlists/:playlistId/usuarios/:usuarioId', component: PlaylistDetalhesComponent, title: 'Playlist' },
-    { path: '**', component: PaginaInicialComponent, title: 'Literatura Pública' } // Rota curinga para redirecionar para a página inicial,
+    { path: '**', component: PaginaInicialComponent, title: 'Literatura Pública' }
 ];

@@ -12,10 +12,9 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./livro-filtros.component.scss']
 })
 export class LivroFiltrosComponent implements OnInit, OnChanges {
-  @Output() livrosFiltrados = new EventEmitter<any>(); // Emite o objeto completo da API
-  @Input() page: number = 0; // Recebe o número da página do componente pai
-  @Input() size: number = 12; // Recebe o tamanho da página do componente pai
-
+  @Output() livrosFiltrados = new EventEmitter<any>();
+  @Input() page: number = 0;
+  @Input() size: number = 12;
   generos: string[] = [];
   subgeneros: string[] = [];
   ordenacoes = [
@@ -48,19 +47,19 @@ export class LivroFiltrosComponent implements OnInit, OnChanges {
   }
 
   carregarSubgeneros() {
-    this.http.get<string[]>('http://localhost:8080/livros/subgeneros')
+    this.http.get<string[]>('http://localhost:8080/api/livros/subgeneros')
       .subscribe(r => this.subgeneros = r);
   }
 
   carregarGeneros() {
-    this.http.get<string[]>('http://localhost:8080/livros/generos')
+    this.http.get<string[]>('http://localhost:8080/api/livros/generos')
       .subscribe(r => this.generos = r);
   }
 
   onGeneroChange() {
     this.page = 0;
     if (this.selectedGenero) {
-      this.http.get<string[]>(`http://localhost:8080/livros/subgeneros`, { params: { genero: this.selectedGenero } })
+      this.http.get<string[]>(`http://localhost:8080/api/livros/subgeneros`, { params: { genero: this.selectedGenero } })
         .subscribe(r => {
           this.subgeneros = r;
           this.selectedSubgenero = null;
@@ -82,7 +81,7 @@ export class LivroFiltrosComponent implements OnInit, OnChanges {
     if (this.selectedSubgenero) params = params.set('subgenero', this.selectedSubgenero);
     if (this.selectedOrdenar) params = params.set('ordenar', this.selectedOrdenar);
 
-    this.http.get<any>('http://localhost:8080/livros/filtrar', { params })
+    this.http.get<any>('http://localhost:8080/api/livros/filtrar', { params })
       .subscribe((resp) => {
         this.livrosFiltrados.emit(resp);
       });

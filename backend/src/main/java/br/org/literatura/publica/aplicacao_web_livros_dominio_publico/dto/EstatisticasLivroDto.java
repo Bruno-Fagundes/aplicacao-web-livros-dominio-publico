@@ -2,7 +2,7 @@ package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto;
 
 public class EstatisticasLivroDto {
     private Long livroId;
-    private Double media;      // média das notas (0..5)
+    private Double media;  
     private Long qtdeAvaliacao;
 
     public EstatisticasLivroDto() {}

@@ -17,7 +17,7 @@ import { AutorFiltrosComponent } from '../autor-filtros/autor-filtros.component'
 })
 export class AutoresComponent implements OnInit, OnDestroy {
   onImageError($event: ErrorEvent) {
-    throw new Error('Method not implemented.');
+    throw new Error('Método não implementado.');
   }
   carregando = true;
   erro = false;
@@ -28,7 +28,6 @@ export class AutoresComponent implements OnInit, OnDestroy {
   usuarioLogado: Usuario | null = null;
   private destroy$ = new Subject<void>();
 
-  // Variável para rastrear o critério de ordenação atual
   criterioOrdenacaoAtual: string | null = null;
 
   constructor(

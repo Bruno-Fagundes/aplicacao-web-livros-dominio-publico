@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("/livros")
+@RequestMapping("/api/livros")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class LivroController {
@@ -98,7 +98,7 @@ public class LivroController {
     public ResponseEntity<Page<LivroDto>> filtrar(
             @RequestParam(required = false) String genero,
             @RequestParam(required = false) String subgenero,
-            @RequestParam(required = false) String ordenar, // opcional: paginasAsc, paginasDesc, tituloAsc, tituloDesc, anoAsc, anoDesc, notaDesc, notaAsc
+            @RequestParam(required = false) String ordenar, 
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -109,7 +109,7 @@ public class LivroController {
     }
 
     private Sort mapOrdenarParaSort(String ordenar) {
-        if (ordenar == null) return Sort.by("titulo").ascending(); // padrão
+        if (ordenar == null) return Sort.by("titulo").ascending(); 
         return switch (ordenar) {
             case "paginasAsc" -> Sort.by("totalPaginas").ascending();
             case "paginasDesc" -> Sort.by("totalPaginas").descending();
@@ -117,7 +117,7 @@ public class LivroController {
             case "tituloDesc" -> Sort.by("titulo").descending();
             case "anoAsc" -> Sort.by("anoPublicacao").ascending();
             case "anoDesc" -> Sort.by("anoPublicacao").descending();
-            case "notaAsc" -> Sort.by("nota").ascending();   // OBS: nota é @Transient em Livro, ordering por nota aqui pode não funcionar diretamente no DB
+            case "notaAsc" -> Sort.by("nota").ascending(); 
             case "notaDesc" -> Sort.by("nota").descending();
             default -> Sort.by("titulo").ascending();
         };

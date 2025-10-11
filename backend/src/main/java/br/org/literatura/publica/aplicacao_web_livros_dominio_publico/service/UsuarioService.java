@@ -28,7 +28,6 @@ public class UsuarioService {
                 .map(this::converterParaUsuarioDto);
     }
 
-    // Método auxiliar para converter a entidade Usuario em um UsuarioDto
     private UsuarioDto converterParaUsuarioDto(Usuario usuario) {
         if (usuario == null) {
             return null;

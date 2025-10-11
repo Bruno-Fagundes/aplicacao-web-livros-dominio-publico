@@ -2,13 +2,13 @@
   <div class="livro-container">
     <div *ngIf="carregando" class="loading-container">
       <div class="spinner"></div>
-      <p>Carregando livros...</p>
+      <p>Carregando livros e autores...</p>
     </div>
 
     <div *ngIf="erro && !carregando" class="error-container">
       <h2>Erro ao carregar a página</h2>
       <p>
-        Não foi possível carregar os livros. Por favor, tente novamente mais
+        Não foi possível carregar os livros e os autores. Por favor, tente novamente mais
         tarde.
       </p>
       <button (click)="carregarLivrosPopulares()" class="btn-retry">

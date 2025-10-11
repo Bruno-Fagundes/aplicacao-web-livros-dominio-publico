@@ -105,8 +105,7 @@ public class LivroService {
     private String gerarUrlPdf(Livro livro) {
         String nomeAutor = formatarNomeArquivo(livro.getAutor().getNome());
         String tituloLivro = formatarNomeArquivo(livro.getTitulo());
-        return "/api/livros/pdf/" + nomeAutor + "/" + tituloLivro + ".pdf";
-    }
+        return "/livros/pdf/" + nomeAutor + "/" + tituloLivro + ".pdf";    }
 
     private String formatarNomeArquivo(String nome) {
         return nome

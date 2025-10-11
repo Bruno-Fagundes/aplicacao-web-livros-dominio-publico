@@ -8,7 +8,7 @@ export interface Usuario {
     fotoPerfilUrl?: string;
     livrosFavoritos?: any[];
     playlists?: any[];
-    livrosLidos?: number; // ⭐️ O tipo correto é number, não array
+    livrosLidos?: number;
     paginasLidas?: number;
     generoFavorito?: string;
 }

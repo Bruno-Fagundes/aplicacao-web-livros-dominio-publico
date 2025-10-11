@@ -20,7 +20,6 @@ export class PesquisaService {
         const termoLowerCase = termo.toLowerCase();
         return this.livroService.listarLivros().pipe(
             map(livros => {
-                // Filtra os livros localmente
                 return livros.filter(livro =>
                     livro.titulo.toLowerCase().includes(termoLowerCase)
                 );
@@ -31,19 +30,16 @@ export class PesquisaService {
     buscarPorTermo(termo: string): Observable<{ livros: LivroDetalhes[], autores: AutorDetalhes[] }> {
         const termoLowerCase = termo.toLowerCase();
 
-        // Combina as chamadas para buscar livros e autores
         return forkJoin({
             livros: this.livroService.listarLivros(),
             autores: this.autorService.listarAutores()
         }).pipe(
             map(resultados => {
-                // Filtra os livros localmente
                 const livrosEncontrados = resultados.livros.filter(livro =>
                     livro.titulo.toLowerCase().includes(termoLowerCase) ||
                     (livro.autor && livro.autor.nome.toLowerCase().includes(termoLowerCase))
                 );
 
-                // Filtra os autores localmente
                 const autoresEncontrados = resultados.autores.filter(autor =>
                     autor.nome.toLowerCase().includes(termoLowerCase)
                 );

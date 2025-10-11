@@ -1,4 +1,3 @@
-// src/main/java/br/org/literatura/publica/aplicacao_web_livros_dominio_publico/controller/AutorController.java
 package br.org.literatura.publica.aplicacao_web_livros_dominio_publico.controller;
 
 import br.org.literatura.publica.aplicacao_web_livros_dominio_publico.dto.AutorDto;
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/autores")
+@RequestMapping("/api/autores")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class AutorController {
@@ -27,7 +26,6 @@ public class AutorController {
     public ResponseEntity<AutorDto> buscarAutorPorId(@PathVariable Long id) {
         Optional<AutorDto> autor = autorService.buscarDetalhesAutor(id);
 
-        // Usa o método map() do Optional para simplificar o retorno
         return autor.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

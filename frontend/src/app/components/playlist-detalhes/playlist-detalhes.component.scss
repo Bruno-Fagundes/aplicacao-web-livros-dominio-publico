@@ -165,3 +165,13 @@ h3 {
   color: #777;
   margin: 0;
 }
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}

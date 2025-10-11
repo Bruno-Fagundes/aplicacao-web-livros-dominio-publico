@@ -1,3 +1,13 @@
+<div *ngIf="carregando" class="loading-container">
+  <div class="spinner"></div>
+  <p>Carregando detalhes do usuário...</p>
+</div>
+
+<div *ngIf="erro && !carregando" class="error-container">
+  <h2>Erro ao carregar o usuário</h2>
+  <p>Você não tem permissão para acessar este usuário.</p>
+</div>
+
 <div class="container" *ngIf="usuario">
   <div class="usuario-header">
     <div class="foto-playlists">

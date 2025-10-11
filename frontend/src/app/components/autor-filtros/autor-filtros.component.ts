@@ -24,7 +24,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./autor-filtros.component.scss']
 })
 export class AutorFiltrosComponent implements OnInit {
-  @Output() ordenar = new EventEmitter<string | null>(); // ✅ Permita que o EventEmitter emita null
+  @Output() ordenar = new EventEmitter<string | null>();
 
   selectedOrdenar: string | null = null;
 

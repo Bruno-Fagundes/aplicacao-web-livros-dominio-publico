@@ -7,23 +7,23 @@ import { LivroDetalhes } from '../interfaces/livro.interface';
     providedIn: 'root'
 })
 export class LivroService {
-    private apiUrl = 'http://localhost:8080/livros';
+    private baseUrl = 'http://localhost:8080/api/livros';
 
     constructor(private http: HttpClient) { }
 
     buscarLivroPorId(id: number): Observable<LivroDetalhes> {
-        return this.http.get<LivroDetalhes>(`${this.apiUrl}/${id}`);
+        return this.http.get<LivroDetalhes>(`${this.baseUrl}/${id}`);
     }
 
     listarLivros(): Observable<LivroDetalhes[]> {
-        return this.http.get<LivroDetalhes[]>(`${this.apiUrl}`);
+        return this.http.get<LivroDetalhes[]>(`${this.baseUrl}`);
     }
 
     obterUrlPdf(nomeArquivo: string): string {
-        return `${this.apiUrl}/pdf/${nomeArquivo}`;
+        return `${this.baseUrl}/pdf/${nomeArquivo}`;
     }
 
     listarLivrosPaginados(page: number, size: number): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}/pagina?page=${page}&size=${size}`);
+        return this.http.get<any>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
     }
 }

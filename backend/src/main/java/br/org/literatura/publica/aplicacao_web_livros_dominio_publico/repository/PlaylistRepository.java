@@ -18,28 +18,21 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     @Query("SELECT DISTINCT p FROM Playlist p LEFT JOIN FETCH p.livros")
     List<Playlist> findAllWithLivros();
 
-    // ============== MÉTODOS COM PAGINAÇÃO ==============
-
-    // Buscar todas as playlists com paginação (sem livros para performance)
     @Query("SELECT p FROM Playlist p")
     Page<Playlist> findAllPaginated(Pageable pageable);
 
-    // Buscar playlists por título com paginação
     @Query("SELECT p FROM Playlist p WHERE p.titulo LIKE %:titulo%")
     Page<Playlist> findByTituloContainingIgnoreCase(@Param("titulo") String titulo, Pageable pageable);
 
-    // Buscar playlists por usuário com paginação
     @Query("SELECT p FROM Playlist p WHERE p.usuario.usuarioId = :usuarioId")
     Page<Playlist> findByUsuarioId(@Param("usuarioId") Long usuarioId, Pageable pageable);
 
-    // Buscar playlists por título e usuário com paginação
     @Query("SELECT p FROM Playlist p WHERE p.titulo LIKE %:titulo% AND p.usuario.usuarioId = :usuarioId")
     Page<Playlist> findByTituloAndUsuarioId(
             @Param("titulo") String titulo,
             @Param("usuarioId") Long usuarioId,
             Pageable pageable);
 
-    // Método genérico com filtros opcionais
     @Query("SELECT p FROM Playlist p WHERE " +
             "(:titulo IS NULL OR p.titulo LIKE %:titulo%) AND " +
             "(:usuarioId IS NULL OR p.usuario.usuarioId = :usuarioId)")
@@ -48,16 +41,12 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
             @Param("usuarioId") Long usuarioId,
             Pageable pageable);
 
-    // Buscar playlists populares (com mais livros) - paginado
     @Query("SELECT p FROM Playlist p ORDER BY p.qtdeLivros DESC")
     Page<Playlist> findMostPopular(Pageable pageable);
 
-    // Contar playlists por usuário
     @Query("SELECT COUNT(p) FROM Playlist p WHERE p.usuario.usuarioId = :usuarioId")
     Long countByUsuarioId(@Param("usuarioId") Long usuarioId);
 
-
-    // No seu PlaylistRepository, adicione estes métodos:
     List<Playlist> findByUsuario_UsuarioId(Long usuarioId);
     Optional<Playlist> findByPlaylistIdAndUsuario_UsuarioId(Long playlistId, Long usuarioId);
 }
