@@ -1,0 +1,117 @@
+// cadastro-adjusted-border.scss
+
+// Variáveis
+$brand-red: #D90000;
+$bg-page: #fafafa;    // White Dove
+$card-bg: #dbdbdb;
+$input-bg: #fbfbfb;   // off-white
+$text-color: #202020;
+$card-width: 460px;
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background: $bg-page;
+  color: $text-color;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Container - sem vh */
+.cadastro-container {
+  min-height: 720px;      
+  display: grid;
+  align-items: start;     
+  justify-items: center;
+  padding-top: 60px;      
+  padding-bottom: 60px;   
+}
+
+/* Card -> agora com borda vermelha */
+.cadastro-card {
+  width: $card-width;
+  max-width: calc(100% - 48px);
+  background: $card-bg;
+  padding: 32px 36px;
+  border-radius: 6px;
+  position:absolute;
+}
+
+/* Form */
+.cadastro-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grupo de campo */
+.form-row {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: $text-color;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    height: 44px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: $input-bg;
+    border: 1px solid $brand-red;    
+   box-shadow: inset 0 1px 0 rgba(0,0,0,0.06);
+    font-size: 15px;
+    outline: none;
+  }
+}
+
+/* Botão CADASTRAR */
+.btn-primary {
+  display: block;
+  width: 220px;
+  margin: 16px auto 0;
+  padding: 12px 0;
+  text-align: center;
+  border-radius: 6px;
+  background: linear-gradient($brand-red, darken($brand-red, 6%));
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 22px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+}
+
+/* Pequena responsividade */
+@media (max-width: 640px) {
+  .cadastro-card {
+    padding: 24px 18px;
+  }
+  .btn-primary {
+    width: 200px;
+    font-size: 18px;
+  }
+  .form-row label {
+    font-size: 15px;
+  }
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px; // Adiciona um espaçamento de 10px acima do elemento
+  // Você pode usar outros valores como 15px, 20px, etc.
+}
+
+/* Hover / active / disabled */
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); box-shadow: 0 1px 0 rgba(0,0,0,0.05); }
+.btn-primary[disabled] { opacity: 0.6; cursor: not-allowed; transform: none; }

@@ -1,0 +1,59 @@
+<div *ngIf="carregando" class="loading-container">
+  <div class="spinner"></div>
+  <p>Carregando detalhes do autor...</p>
+</div>
+
+<div *ngIf="erro && !carregando" class="error-container">
+  <h2>Erro ao carregar o autor</h2>
+  <p>Não foi possível encontrar os detalhes do autor solicitado.</p>
+  <button (click)="carregarAutor(1)" class="btn-retry">Tentar Novamente</button>
+</div>
+
+<div *ngIf="autor && !carregando && !erro" class="autor-detalhes">
+  <div class="container">
+    <div class="autor-header">
+      <div class="foto-container">
+        <img
+          [src]="autor.urlFoto"
+          [alt]="'Foto do autor ' + autor.nome"
+          class="foto-autor"
+        />
+      </div>
+
+      <div class="info-container">
+        <h1 class="nome-autor">{{ autor.nome }}</h1>
+        <div class="datas-autor">
+          <span class="data-nascimento" *ngIf="autor.dataNascimento">
+            Nascimento: {{ autor.dataNascimento | date : "dd/MM/yyyy" }}
+          </span>
+          <span class="data-falecimento" *ngIf="autor.dataFalecimento">
+            Falecimento: {{ autor.dataFalecimento | date : "dd/MM/yyyy" }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="biografia-section">
+      <h3>Biografia</h3>
+      <p class="biografia-texto">{{ autor.biografia }}</p>
+    </div>
+
+    <div class="livros-section" *ngIf="autor.livros && autor.livros.length > 0">
+      <h3>Obras de {{ autor.nome }}</h3>
+      <div class="livros-grid">
+        <div *ngFor="let livro of autor.livros" class="livro-card">
+          <a [routerLink]="['/livros', livro.livroId]">
+            <img
+              [src]="livro.urlCapa"
+              [alt]="'Capa do livro ' + livro.titulo"
+              class="capa-livro"
+            />
+            <div class="livro-info">
+              <h3>{{ livro.titulo }}</h3>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,279 @@
+.container {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.usuario-header {
+  display: flex;
+  flex-direction: row; /* ⭐️ Agora a foto e o texto ficam lado a lado */
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.foto-container {
+  flex-shrink: 0;
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: none; 
+  background-color: transparent; /* ⭐️ Adicionado: Garante que não há fundo sólido */
+  display: flex; /* ⭐️ Adicionado: Para centralizar o SVG dentro do círculo */
+  align-items: center; /* ⭐️ Adicionado: Para centralizar o SVG */
+  justify-content: center; /* ⭐️ Adicionado: Para centralizar o SVG */
+}
+
+
+.foto-perfil {
+  width: 80%; /* ⭐️ Ajuste para o SVG ficar menor que o círculo, se desejar */
+  height: 80%; /* ⭐️ Ajuste para o SVG ficar menor que o círculo, se desejar */
+  object-fit: contain; /* ⭐️ Garante que o SVG se ajuste sem ser cortado */
+  display: block;
+}
+.info-container {
+  flex: 1;
+}
+
+.nome-usuario {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.nome-usuario {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.estatisticas-section,
+.playlists-section {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+}
+
+h3 {
+  font-size: 1.8em;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #dc2626;
+  padding-bottom: 10px;
+}
+
+.estatisticas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  text-align: center;
+}
+
+.estatistica-card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  h4 {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  p {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #dc2626;
+    margin: 0;
+  }
+}
+
+.playlists-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.playlist-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.playlist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.playlist-card a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.playlist-card .capa-playlist {
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
+  display: block;
+}
+
+.playlist-card .playlist-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.playlist-card h3 {
+  font-size: 1em;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.playlist-card p {
+  font-size: 0.9em;
+  color: #777;
+  margin: 5px 0 0;
+}
+
+.sem-playlists {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 40px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .usuario-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .foto-container {
+    width: 150px;
+    height: 150px;
+        box-shadow: none; /* ⭐️ Remova a sombra também no responsivo */
+    background-color: transparent;
+  }
+  
+  .nome-usuario {
+    font-size: 2em;
+  }
+  
+  .estatisticas-grid,
+  .playlists-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* agrupamento foto + mini-playlists */
+.usuario-header {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* wrapper que contém foto e mini-playlists */
+.foto-playlists {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* foto ajustada */
+.foto-container {
+  flex-shrink: 0;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.foto-perfil {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* mini-playlists: grid vertical / horizontal ao lado da foto */
+.mini-playlists {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+/* cada mini card é pequeno e redondo/capa */
+.mini-playlist-card {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-playlist-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* responsivo: empilha em telas pequenas */
+@media (max-width: 768px) {
+  .usuario-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .foto-playlists {
+    flex-direction: row;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .mini-playlists {
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+  }
+}
+.playlists-grid {
+  display: grid;
+  gap: 32px; /* antes 20px */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}

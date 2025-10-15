@@ -1,1 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --brand-red: #D90000;
+  --bg: #ffffff;
+  --muted: #6b7280;
+  --max-width: 1200px;
+  --header-padding-vertical: 14px;
+  --header-padding-horizontal: 20px;
+}
+
+a { color: var(--brand-red); text-decoration: none; }
+a:hover { text-decoration: underline; }

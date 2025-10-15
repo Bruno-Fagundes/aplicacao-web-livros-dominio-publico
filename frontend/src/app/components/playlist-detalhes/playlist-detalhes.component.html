@@ -1,0 +1,124 @@
+<app-playlist-adicionar-livro
+  *ngIf="mostrarModalAdicionarLivro"
+  [playlistId]="playlist!.playlistId"
+  (fecharModal)="fecharModalAdicionarLivro()"
+  (livroAdicionado)="onLivroAdicionado()"
+></app-playlist-adicionar-livro>
+
+<app-playlist-editar
+  *ngIf="mostrarModalEditarPlaylist"
+  [playlistId]="playlist!.playlistId"
+  (fecharModal)="fecharModalEditarPlaylist()"
+  (playlistAtualizada)="onPlaylistAtualizada()"
+></app-playlist-editar>
+
+<div *ngIf="carregando" class="loading-container">
+  <div class="spinner"></div>
+  <p>Carregando detalhes da playlist...</p>
+</div>
+
+<div *ngIf="erro && !carregando" class="error-container">
+  <h2>Erro ao carregar a playlist</h2>
+  <p>
+    {{
+      erroMsg ||
+        "Não foi possível encontrar os detalhes da playlist solicitada."
+    }}
+  </p>
+</div>
+
+<div
+  *ngIf="playlist && !carregando && !erro"
+  class="playlist-detalhes container"
+>
+  <div class="playlist-header">
+    <div class="capa-container">
+      <img
+        [src]="getCapaUrl()"
+        [alt]="'Capa da playlist ' + playlist?.titulo"
+        class="capa-playlist"
+        loading="lazy"
+      />
+    </div>
+
+    <div class="info-container">
+      <h1 class="titulo-playlist">{{ playlist?.titulo }}</h1>
+      <p class="descricao-playlist" *ngIf="playlist.descricao">
+        {{ playlist?.descricao }}
+      </p>
+
+      <div class="meta-info">
+        <p>
+          Criado por:
+          <strong>
+            <a [routerLink]="['/usuarios', playlist.usuario.usuarioId]">
+              {{ playlist?.usuario?.nomeUsuario || "Usuário Desconhecido" }}
+            </a>
+          </strong>
+        </p>
+        <p>
+          Livros:
+          <strong>{{
+            playlist?.qtdeLivros ||
+              (playlist?.livros && playlist?.livros?.length) ||
+              0
+          }}</strong>
+        </p>
+      </div>
+
+      <div class="botoes-acao">
+        <button
+          class="btn-icone"
+          (click)="abrirModalEditarPlaylist()"
+          title="Editar Playlist"
+        >
+          <img src="assets/images/icones/editar.svg" alt="Editar Playlist" />
+        </button>
+
+        <button
+          class="btn-icone"
+          (click)="abrirModalAdicionarLivro()"
+          title="Adicionar Livro"
+        >
+          <img src="assets/images/icones/adicionar.svg" alt="Adicionar Livro" />
+        </button>
+
+        <button
+          class="btn-icone"
+          (click)="deletarPlaylist()"
+          title="Deletar Playlist"
+        >
+          <img src="assets/images/icones/deletar.svg" alt="Deletar Playlist" />
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="livros-section"
+    *ngIf="playlist.livros && playlist.livros.length > 0"
+  >
+    <h3>Livros nesta Playlist</h3>
+    <div class="livros-grid">
+      <div *ngFor="let livro of playlist.livros" class="livro-card">
+        <a [routerLink]="['/livros', livro.livroId]">
+          <img
+            [src]="livro.urlCapa"
+            [alt]="'Capa do livro ' + livro.titulo"
+            class="capa-livro"
+          />
+          <div class="livro-info">
+            <h3>{{ livro.titulo }}</h3>
+            <p>
+              <span *ngIf="livro.notaDoUsuario"
+                >Sua nota: ⭐ {{ livro.notaDoUsuario }}</span
+              >
+              <span *ngIf="!livro.notaDoUsuario" class="sem-nota"
+                >Ainda não avaliado</span
+              >
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

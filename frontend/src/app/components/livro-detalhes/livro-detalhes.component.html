@@ -1,0 +1,85 @@
+<div *ngIf="carregando" class="loading-container">
+  <div class="spinner"></div>
+  <p>Carregando detalhes do livro...</p>
+</div>
+
+<div *ngIf="erro && !carregando" class="error-container">
+  <h2>Erro ao carregar o livro</h2>
+  <p>
+    Não foi possível encontrar os detalhes do livro solicitado. Por favor, tente
+    novamente mais tarde.
+  </p>
+</div>
+
+<div *ngIf="livro && !carregando && !erro" class="livro-detalhes">
+  <div class="container">
+    <div class="livro-header">
+      <div class="capa-container">
+        <img
+          [src]="livro.urlCapa"
+          [alt]="'Capa do livro ' + livro.titulo"
+          class="capa-livro"
+        />
+      </div>
+
+      <div class="info-container">
+        <h1 class="titulo-livro">{{ livro.titulo }}</h1>
+        <a [routerLink]="['/autores', livro.autor.autorId]">
+          <h2 class="nome-autor">{{ livro.autor.nome }}</h2>
+        </a>
+
+        <div class="acoes">
+          <!-- sempre visível -->
+          <button (click)="lerDoInicio()" class="btn btn-secondary">
+            LER DO INÍCIO
+          </button>
+
+          <!-- só aparece para usuário autenticado -->
+          <button
+            *ngIf="isAuthenticated"
+            (click)="continuarLendo()"
+            class="btn btn-primary"
+          >
+            CONTINUAR LENDO
+          </button>
+        </div>
+
+        <app-classificacao
+          *ngIf="livro"
+          [livroId]="livroId"
+          [usuarioId]="usuarioId"
+        ></app-classificacao>
+      </div>
+    </div>
+
+    <div class="detalhes-section">
+      <div class="detalhes-grid">
+        <div class="detalhe-item">
+          <span class="label">Quantidade de Páginas:</span
+          ><span class="valor">{{ livro.totalPaginas }}</span>
+        </div>
+        <div class="detalhe-item">
+          <span class="label">Ano de Publicação:</span
+          ><span class="valor">{{ livro.anoPublicacao }}</span>
+        </div>
+        <div class="detalhe-item">
+          <span class="label">Gênero:</span
+          ><span class="valor">{{ livro.genero }}</span>
+        </div>
+        <div class="detalhe-item">
+          <span class="label">Sub Gênero:</span
+          ><span class="valor">{{ livro.subgenero }}</span>
+        </div>
+        <div class="detalhe-item">
+          <span class="label">Nota:</span
+          ><span class="rating">{{ livro.nota }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sinopse-section">
+      <h3>Sinopse</h3>
+      <p class="sinopse-texto">{{ livro.sinopse }}</p>
+    </div>
+  </div>
+</div>

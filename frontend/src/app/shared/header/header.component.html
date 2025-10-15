@@ -1,0 +1,102 @@
+<header #headerEl class="header-site">
+  <div class="header-inner">
+    <a routerLink="/" class="logo-link">
+      <img
+        src="/assets/images/logo-site/logo-site.svg"
+        alt="Logo do Site"
+        class="logo-site"
+      />
+    </a>
+
+    <nav class="main-nav">
+      <a routerLink="/livros" class="nav-link">Livros</a>
+      <a routerLink="/autores" class="nav-link">Autores</a>
+    </nav>
+
+    <div class="search-and-user">
+      <div class="search-bar">
+        <input
+          type="text"
+          placeholder="PESQUISAR"
+          [(ngModel)]="termoBusca"
+          (keyup)="onTyping()"
+          (keyup.enter)="onPesquisar()"
+          (focus)="onTyping()"
+        />
+        <button aria-label="Pesquisar" (click)="onPesquisar()">
+          <img src="/assets/images/icones/buscar_icon.svg" alt="Buscar" />
+        </button>
+      </div>
+
+      <div class="search-suggestions" *ngIf="mostrarSugestoes">
+        <ng-container
+          *ngIf="sugestoesLivros.length > 0 || sugestoesAutores.length > 0"
+        >
+          <ul class="suggestions-list">
+            <ng-container *ngIf="sugestoesLivros.length > 0">
+              <li class="section-title">Livros</li>
+              <li
+                *ngFor="let livro of sugestoesLivros"
+                (click)="onSugestaoClick('livro', livro.livroId)"
+              >
+                <a [routerLink]="['/livros', livro.livroId]">
+                  <img
+                    [src]="livro.urlCapa"
+                    alt="Capa do livro"
+                    class="suggestion-img"
+                  />
+                  <div class="suggestion-info">
+                    <span class="suggestion-title">{{ livro.titulo }}</span>
+                    <span class="suggestion-author">{{
+                      livro.autor.nome
+                    }}</span>
+                  </div>
+                </a>
+              </li>
+            </ng-container>
+
+            <ng-container *ngIf="sugestoesAutores.length > 0">
+              <li class="section-title">Autores</li>
+              <li
+                *ngFor="let autor of sugestoesAutores"
+                (click)="onSugestaoClick('autor', autor.autorId)"
+              >
+                <a [routerLink]="['/autores', autor.autorId]">
+                  <img
+                    [src]="autor.urlFoto"
+                    alt="Foto do autor"
+                    class="suggestion-img"
+                  />
+                  <div class="suggestion-info">
+                    <span class="suggestion-title">{{ autor.nome }}</span>
+                  </div>
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </ng-container>
+      </div>
+
+      <div class="usuario-button">
+        <ng-container *ngIf="usuarioLogado; else loginButton">
+          <a
+            *ngIf="usuarioLogado?.id"
+            [routerLink]="['/usuarios', usuarioLogado.id]"
+            class="user-link"
+          >
+            <img
+              width="46"
+              height="46"
+              src="/assets/images/foto-perfil-usuario/foto-usuario.svg"
+              alt="Foto do Usuário"
+            />
+          </a>
+        </ng-container>
+
+        <ng-template #loginButton>
+          <a routerLink="/login" class="nav-link login">Entrar</a>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</header>
