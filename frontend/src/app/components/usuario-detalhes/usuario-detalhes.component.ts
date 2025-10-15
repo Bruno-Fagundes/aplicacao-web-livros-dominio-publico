@@ -101,6 +101,32 @@ export class UsuarioDetalhesComponent implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Retorna a URL da capa da playlist
+   * Lógica:
+   * 1. Se imagemUrl não é padrão → usa ela (imagem personalizada)
+   * 2. Se imagemUrl é padrão E tem livros → usa capa do primeiro livro
+   * 3. Caso contrário → usa imagem padrão
+   */
+  getPlaylistCapaUrl(playlist: Playlist): string {
+    const IMAGEM_PADRAO = 'assets/images/capa-playlist/capa-playlist.svg';
+
+    // Se tem imagem personalizada (diferente da padrão), usa ela
+    if (playlist.imagemUrl &&
+      playlist.imagemUrl.trim() &&
+      playlist.imagemUrl !== IMAGEM_PADRAO) {
+      return playlist.imagemUrl;
+    }
+
+    // Se não tem imagem personalizada mas tem livros, usa a capa do primeiro
+    if (playlist.livros?.length && playlist.livros[0].urlCapa) {
+      return playlist.livros[0].urlCapa;
+    }
+
+    // Fallback: imagem padrão
+    return IMAGEM_PADRAO;
+  }
+
   getFotoPerfilUrl(fotoPerfilUrl?: string | null): string {
     const fallback = 'assets/images/foto-perfil-usuario/foto-usuario.svg';
     if (!fotoPerfilUrl) return fallback;
@@ -129,7 +155,7 @@ export class UsuarioDetalhesComponent implements OnInit, OnDestroy {
     const img = event.target as HTMLImageElement;
     if (!img) return;
     img.onerror = null;
-    img.src = 'assets/images/placeholder-playlist.jpg';
+    img.src = 'assets/images/capa-playlist/capa-playlist.svg';
   }
 
   ngOnDestroy(): void {

@@ -1,5 +1,3 @@
-// livros.component.ts
-
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -20,12 +18,11 @@ export class LivrosComponent implements OnInit, OnDestroy {
   carregando: boolean = true;
   erro: boolean = false;
   livros: LivroDetalhes[] = [];
-
   page: number = 0;
   size: number = 12;
   lastPage: boolean = false;
-
   usuarioLogado: Usuario | null = null;
+  ordenacaoAtual: string | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -46,10 +43,13 @@ export class LivrosComponent implements OnInit, OnDestroy {
     } else {
       this.livros = [...this.livros, ...response.content];
     }
-
     this.lastPage = response.last;
     this.carregando = false;
     this.erro = false;
+  }
+
+  onOrdenacaoAlterada(ordenacao: string | null) {
+    this.ordenacaoAtual = ordenacao;
   }
 
   carregarMaisLivros(): void {
@@ -64,4 +64,3 @@ export class LivrosComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 }
-

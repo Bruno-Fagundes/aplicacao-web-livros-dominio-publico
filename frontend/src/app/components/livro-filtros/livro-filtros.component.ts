@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class LivroFiltrosComponent implements OnInit, OnChanges {
   @Output() livrosFiltrados = new EventEmitter<any>();
+  @Output() ordenacaoAlterada = new EventEmitter<string | null>();
   @Input() page: number = 0;
   @Input() size: number = 12;
   generos: string[] = [];
@@ -89,6 +90,7 @@ export class LivroFiltrosComponent implements OnInit, OnChanges {
 
   onOrdenarChange() {
     this.page = 0;
+    this.ordenacaoAlterada.emit(this.selectedOrdenar);
     this.buscar();
   }
 

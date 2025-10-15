@@ -17,9 +17,10 @@ import { Router } from '@angular/router';
 import { ResultadosPesquisaComponent } from './components/resultados-pesquisa/resultados-pesquisa.component';
 import { PlaylistCriarComponent } from './components/playlist-criar/playlist-criar.component';
 import { LivroLeituraComponent } from './components/livro-leitura/livro-leitura.component';
+import { PlaylistEditarComponent } from './components/playlist-editar/playlist-editar.component';
 
 export const routes: Routes = [
-    { path: '', component: PaginaInicialComponent, title: 'Literatura Pública' }, // <-- Mudei para o topo
+    { path: '', component: PaginaInicialComponent, title: 'Literatura Pública' },
     { path: 'login', component: LoginComponent, title: 'Login' },
     { path: 'cadastro', component: CadastroComponent, title: 'Cadastro' },
     { path: 'usuarios/undefined', component: LoginComponent, title: 'Login' },

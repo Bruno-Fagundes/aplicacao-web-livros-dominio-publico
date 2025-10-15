@@ -1,4 +1,3 @@
-// src/app/components/playlist-criar/playlist-criar.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PlaylistService } from '../../services/playlist.service';
@@ -29,6 +28,8 @@ export class PlaylistCriarComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   usuarioIdLogado: number | null = null;
 
+  private readonly IMAGEM_PADRAO = 'assets/images/capa-playlist/capa-playlist.svg';
+
   constructor(
     private fb: FormBuilder,
     private playlistService: PlaylistService,
@@ -43,7 +44,6 @@ export class PlaylistCriarComponent implements OnInit, OnDestroy {
       imagemUrl: ['']
     });
 
-    // obtém id do usuário logado
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(u => {
@@ -55,12 +55,14 @@ export class PlaylistCriarComponent implements OnInit, OnDestroy {
         this.usuarioIdLogado = id ?? null;
       });
 
-    // preview da imagem
     this.form.get('imagemUrl')?.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe((val: string) => {
-        this.imagemPreview = val ? val : null;
+        const url = val?.trim();
+        this.imagemPreview = url ? url : this.IMAGEM_PADRAO;
       });
+
+    this.imagemPreview = this.IMAGEM_PADRAO;
   }
 
   submit(): void {
@@ -76,12 +78,16 @@ export class PlaylistCriarComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const imagemUrlValue = this.form.value.imagemUrl?.trim();
+
     const payload: CriarPlaylistPayload = {
       usuarioId: this.usuarioIdLogado,
-      titulo: this.form.value.titulo,
+      titulo: this.form.value.titulo.trim(),
       descricao: this.form.value.descricao?.trim() || null,
-      imagemUrl: this.form.value.imagemUrl?.trim() || 'assets/images/capa-playlist/capa-playlist.svg'
+      imagemUrl: imagemUrlValue || null
     };
+
+    console.log('Payload enviado para criar playlist:', payload);
 
     this.carregando = true;
     this.playlistService.criarPlaylist(payload)
@@ -89,11 +95,11 @@ export class PlaylistCriarComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (created: Playlist) => {
           this.carregando = false;
+          console.log('Playlist criada:', created);
+          console.log('Imagem da playlist criada:', created.imagemUrl);
           if (created && created.playlistId) {
-            // navega para a playlist criada
             this.router.navigate(['/playlists', created.playlistId, 'usuarios', created.usuario?.usuarioId ?? this.usuarioIdLogado]);
           } else {
-            // fallback para perfil do usuário
             this.router.navigate(['/usuarios', this.usuarioIdLogado]);
           }
         },
@@ -120,7 +126,6 @@ export class PlaylistCriarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // getters para template
   get titulo() { return this.form.get('titulo'); }
   get descricao() { return this.form.get('descricao'); }
   get imagemUrl() { return this.form.get('imagemUrl'); }

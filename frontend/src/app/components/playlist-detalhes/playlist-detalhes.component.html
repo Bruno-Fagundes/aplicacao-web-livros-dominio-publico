@@ -5,6 +5,13 @@
   (livroAdicionado)="onLivroAdicionado()"
 ></app-playlist-adicionar-livro>
 
+<app-playlist-editar
+  *ngIf="mostrarModalEditarPlaylist"
+  [playlistId]="playlist!.playlistId"
+  (fecharModal)="fecharModalEditarPlaylist()"
+  (playlistAtualizada)="onPlaylistAtualizada()"
+></app-playlist-editar>
+
 <div *ngIf="carregando" class="loading-container">
   <div class="spinner"></div>
   <p>Carregando detalhes da playlist...</p>
@@ -60,13 +67,13 @@
       </div>
 
       <div class="botoes-acao">
-        <a
-          [routerLink]="['/playlist-editar', playlist.playlistId]"
+        <button
           class="btn-icone"
+          (click)="abrirModalEditarPlaylist()"
           title="Editar Playlist"
         >
           <img src="assets/images/icones/editar.svg" alt="Editar Playlist" />
-        </a>
+        </button>
 
         <button
           class="btn-icone"

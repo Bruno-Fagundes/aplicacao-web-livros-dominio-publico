@@ -56,14 +56,11 @@
             ]"
           >
             <img
-              [src]="
-                (playlist.livros?.length ? playlist.livros[0].urlCapa : null) ||
-                playlist.imagemUrl ||
-                'assets/images/fallbacks/capa-playlist-fallback.png'
-              "
+              [src]="getPlaylistCapaUrl(playlist)"
               [alt]="'Capa da playlist ' + playlist.titulo"
               class="capa-playlist"
               loading="lazy"
+              (error)="onImageErrorPlaylist($event)"
             />
             <div class="playlist-info">
               <h4>{{ playlist.titulo }}</h4>

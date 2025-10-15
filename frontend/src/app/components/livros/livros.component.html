@@ -3,15 +3,14 @@
     <div class="header-livros">
       <h2 class="titulo-livros">LIVROS</h2>
     </div>
-
     <div class="filtros-wrapper">
       <app-livro-filtros
         (livrosFiltrados)="onLivrosFiltrados($event)"
+        (ordenacaoAlterada)="onOrdenacaoAlterada($event)"
         [page]="page"
         [size]="size"
       ></app-livro-filtros>
     </div>
-
     <div class="livros-grid">
       <div *ngFor="let livro of livros" class="livro-card">
         <a [routerLink]="['/livros', livro.livroId]">
@@ -22,12 +21,38 @@
           />
           <div class="livro-info">
             <h3>{{ livro.titulo }}</h3>
-            <p>{{ livro.anoPublicacao }}</p>
+
+            <p
+              *ngIf="
+                ordenacaoAtual === 'notaDesc' || ordenacaoAtual === 'notaAsc'
+              "
+            >
+              {{ livro.nota ? livro.nota.toFixed(1) : "Sem nota" }}
+            </p>
+
+            <p
+              *ngIf="
+                ordenacaoAtual === 'paginasDesc' ||
+                ordenacaoAtual === 'paginasAsc'
+              "
+            >
+              {{ livro.totalPaginas }} páginas
+            </p>
+
+            <p
+              *ngIf="
+                ordenacaoAtual !== 'notaDesc' &&
+                ordenacaoAtual !== 'notaAsc' &&
+                ordenacaoAtual !== 'paginasDesc' &&
+                ordenacaoAtual !== 'paginasAsc'
+              "
+            >
+              {{ livro.anoPublicacao }}
+            </p>
           </div>
         </a>
       </div>
     </div>
-
     <button
       (click)="carregarMaisLivros()"
       [disabled]="lastPage"

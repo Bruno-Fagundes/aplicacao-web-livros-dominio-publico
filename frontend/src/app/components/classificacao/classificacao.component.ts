@@ -1,8 +1,7 @@
 import { Component, OnInit, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { take } from 'rxjs/operators'; // use this import
+import { take } from 'rxjs/operators';
 import { ClassificacaoService, EstatisticasLivroDto, ClassificacaoRequestDto } from '../../services/classificacao.service';
-
 @Component({
   selector: 'app-classificacao',
   templateUrl: './classificacao.component.html',
@@ -13,32 +12,25 @@ import { ClassificacaoService, EstatisticasLivroDto, ClassificacaoRequestDto } f
 export class ClassificacaoComponent implements OnInit {
   @Input() livroId: number = 0;
   @Input() usuarioId: number = 0;
-
   public estrelas = [1, 2, 3, 4, 5];
-
   public estatisticas = signal<EstatisticasLivroDto>({ livroId: 0, totalAvaliacao: 0, qtdeAvaliacao: 0 });
   public minhaNota = signal<number>(0);
   public hoveredNota = signal<number>(0);
   public loading = signal<boolean>(false);
   public mensagemErro = signal<string | null>(null);
   public mensagemSucesso = signal<string | null>(null);
-
   public notaAtual = computed(() => this.hoveredNota() || this.minhaNota());
-
   constructor(private classificacaoService: ClassificacaoService) { }
-
   ngOnInit(): void {
     // Carrega estatísticas sempre
     if (this.livroId) {
       this.carregarEstatisticas();
     }
-
     // Carrega a nota do usuário somente se estiver logado (usuarioId > 0)
     if (this.livroId && this.usuarioId && this.usuarioId > 0) {
       this.carregarMinhaNota();
     }
   }
-
   private carregarMinhaNota(): void {
     this.loading.set(true);
     this.classificacaoService.buscarNotaDoUsuario(this.livroId, this.usuarioId)
@@ -58,7 +50,6 @@ export class ClassificacaoComponent implements OnInit {
         }
       });
   }
-
   private carregarEstatisticas(): void {
     this.classificacaoService.buscarEstatisticas(this.livroId)
       .pipe(take(1))
@@ -69,10 +60,8 @@ export class ClassificacaoComponent implements OnInit {
         }
       });
   }
-
   onHover(n: number) { this.hoveredNota.set(n); }
   onLeave() { this.hoveredNota.set(0); }
-
   public avaliar(nota: number): void {
     console.log('avaliar() chamado com nota=', nota, ' livroId=', this.livroId, ' usuarioId=', this.usuarioId);
     if (!this.usuarioId || this.usuarioId <= 0) {
@@ -80,7 +69,6 @@ export class ClassificacaoComponent implements OnInit {
       return;
     }
     if (this.minhaNota() === nota) return; // evita reenvio igual
-
     this.loading.set(true);
     const body: ClassificacaoRequestDto = { usuarioId: this.usuarioId, nota };
     this.classificacaoService.avaliarLivro(this.livroId, body)

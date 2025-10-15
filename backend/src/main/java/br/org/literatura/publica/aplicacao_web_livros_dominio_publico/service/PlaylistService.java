@@ -26,6 +26,9 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final UsuarioRepository usuarioRepository;
     private final LivroRepository livroRepository;
+    
+    // Imagem padrão para playlists sem imagem personalizada
+    private static final String IMAGEM_PADRAO = "assets/images/capa-playlist/capa-playlist.svg";
 
     private PlaylistDto converterParaPlaylistDto(Playlist playlist) {
         if (playlist == null) {
@@ -64,14 +67,12 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
-
     public Page<PlaylistDto> listarPlaylistsPaginadas(
             Pageable pageable,
             String titulo,
             Long usuarioId) {
 
         Page<Playlist> playlists = playlistRepository.findWithFilters(titulo, usuarioId, pageable);
-
         return playlists.map(this::converterParaPlaylistDto);
     }
 
@@ -94,13 +95,19 @@ public class PlaylistService {
         novaPlaylist.setUsuario(usuario);
         novaPlaylist.setTitulo(playlistCreateDto.getTitulo());
         novaPlaylist.setDescricao(playlistCreateDto.getDescricao());
-        novaPlaylist.setImagemUrl(playlistCreateDto.getImagemUrl());
+        
+        // Define a imagem: usa a fornecida pelo usuário ou a padrão
+        String imagemUrl = playlistCreateDto.getImagemUrl();
+        if (imagemUrl == null || imagemUrl.trim().isEmpty()) {
+            imagemUrl = IMAGEM_PADRAO;
+        }
+        novaPlaylist.setImagemUrl(imagemUrl);
+        
         novaPlaylist.setQtdeLivros(0); 
         novaPlaylist.setCriadoEm(LocalDateTime.now());
         novaPlaylist.setAtualizadoEm(LocalDateTime.now());
 
         Playlist playlistSalva = playlistRepository.save(novaPlaylist);
-
         return converterParaPlaylistDto(playlistSalva);
     }
 
@@ -114,12 +121,12 @@ public class PlaylistService {
                     if (playlistUpdateDto.getDescricao() != null) {
                         playlist.setDescricao(playlistUpdateDto.getDescricao());
                     }
+                    // IMPORTANTE: Só atualiza a imagem se for explicitamente fornecida
                     if (playlistUpdateDto.getImagemUrl() != null) {
                         playlist.setImagemUrl(playlistUpdateDto.getImagemUrl());
                     }
 
                     playlist.setAtualizadoEm(LocalDateTime.now());
-
                     Playlist playlistAtualizada = playlistRepository.save(playlist);
                     return converterParaPlaylistDto(playlistAtualizada);
                 });
@@ -147,6 +154,20 @@ public class PlaylistService {
                 playlist.getLivros().add(livro);
                 playlist.setQtdeLivros(playlist.getLivros().size());
                 playlist.setAtualizadoEm(LocalDateTime.now());
+                
+                // Lógica de imagem:
+                // - Se a playlist tem imagem PADRÃO: sempre usa a capa do último livro adicionado
+                // - Se a playlist tem imagem PERSONALIZADA (diferente da padrão): NUNCA altera
+                if (playlist.getImagemUrl() == null || 
+                    playlist.getImagemUrl().equals(IMAGEM_PADRAO) ||
+                    playlist.getImagemUrl().trim().isEmpty()) {
+                    
+                    // Playlist está com imagem padrão, usa a capa do livro que acabou de adicionar
+                    if (livro.getUrlCapa() != null && !livro.getUrlCapa().trim().isEmpty()) {
+                        playlist.setImagemUrl(livro.getUrlCapa());
+                    }
+                }
+                // Se a playlist tem imagem personalizada (URL fornecida pelo usuário), preserva
 
                 Playlist playlistAtualizada = playlistRepository.save(playlist);
                 return Optional.of(converterParaPlaylistDto(playlistAtualizada));
@@ -169,6 +190,25 @@ public class PlaylistService {
             if (playlist.getLivros().remove(livro)) {
                 playlist.setQtdeLivros(playlist.getLivros().size());
                 playlist.setAtualizadoEm(LocalDateTime.now());
+                
+                // Se a imagem da playlist era a capa deste livro que foi removido,
+                // volta para a imagem padrão OU usa a capa do próximo livro
+                String imagemAtual = playlist.getImagemUrl();
+                String capaLivroRemovido = livro.getUrlCapa();
+                
+                // Verifica se a imagem atual é a capa do livro que está sendo removido
+                if (imagemAtual != null && capaLivroRemovido != null && 
+                    imagemAtual.equals(capaLivroRemovido)) {
+                    
+                    // Se ainda há livros, usa a capa do primeiro
+                    if (playlist.getQtdeLivros() > 0 && playlist.getLivros().get(0).getUrlCapa() != null) {
+                        playlist.setImagemUrl(playlist.getLivros().get(0).getUrlCapa());
+                    } else {
+                        // Playlist ficou vazia, volta para a imagem padrão
+                        playlist.setImagemUrl(IMAGEM_PADRAO);
+                    }
+                }
+                // Se a imagem era personalizada (não era capa de livro), mantém
 
                 Playlist playlistAtualizada = playlistRepository.save(playlist);
                 return Optional.of(converterParaPlaylistDto(playlistAtualizada));

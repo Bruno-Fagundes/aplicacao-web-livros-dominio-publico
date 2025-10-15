@@ -6,6 +6,7 @@ import { PlaylistService } from '../../services/playlist.service';
 import { Playlist, Livro } from '../../interfaces/playlist.interface';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { PlaylistAdicionarLivroComponent } from '../playlist-adicionar-livro/playlist-adicionar-livro.component';
+import { PlaylistEditarComponent } from '../playlist-editar/playlist-editar.component';
 import { ClassificacaoService } from '../../services/classificacao.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -14,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './playlist-detalhes.component.html',
   styleUrls: ['./playlist-detalhes.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, PlaylistAdicionarLivroComponent]
+  imports: [CommonModule, RouterModule, PlaylistAdicionarLivroComponent, PlaylistEditarComponent]
 })
 export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
   playlist: Playlist | null = null;
@@ -23,6 +24,7 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
   erroMsg = '';
 
   mostrarModalAdicionarLivro = false;
+  mostrarModalEditarPlaylist = false;
 
   private destroy$ = new Subject<void>();
   private playlistId: number | null = null;
@@ -93,7 +95,6 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // ⭐️ OBTÉM O ID DO USUÁRIO LOGADO
     const usuarioLogado = this.authService.getCurrentUser();
     const usuarioLogadoId = usuarioLogado?.id ?? (usuarioLogado as any)?.id;
 
@@ -103,11 +104,8 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
     }
 
     console.log(`Carregando notas para ${this.playlist.livros.length} livros...`);
-    console.log('Usuario logado:', usuarioLogado);
-    console.log('Usuario logado ID:', usuarioLogadoId);
 
     const requests = this.playlist.livros.map(livro => {
-      console.log(`Buscando nota para livroId=${livro.livroId}, usuarioId=${usuarioLogadoId}`);
       return this.classificacaoService.buscarNotaDoUsuario(livro.livroId, usuarioLogadoId);
     });
 
@@ -115,12 +113,9 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (classificacoes) => {
-          console.log('Notas recebidas:', classificacoes);
-
           classificacoes.forEach((classificacao, index) => {
             if (this.playlist && this.playlist.livros[index]) {
               this.playlist.livros[index].notaDoUsuario = classificacao?.nota ?? null;
-              console.log(`Livro ${this.playlist.livros[index].titulo}: nota = ${this.playlist.livros[index].notaDoUsuario}`);
             }
           });
         },
@@ -170,10 +165,54 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
     this.carregarPlaylist();
   }
 
+  abrirModalEditarPlaylist(): void {
+    this.mostrarModalEditarPlaylist = true;
+  }
+
+  fecharModalEditarPlaylist(): void {
+    this.mostrarModalEditarPlaylist = false;
+  }
+
+  onPlaylistAtualizada(): void {
+    this.fecharModalEditarPlaylist();
+    this.carregarPlaylist();
+  }
+
+
+  /**
+   * Retorna a URL da capa da playlist
+   * Lógica:
+   * 1. Se imagemUrl não é padrão → usa ela (imagem personalizada)
+   * 2. Se imagemUrl é padrão E tem livros → usa capa do ÚLTIMO livro
+   * 3. Caso contrário → usa imagem padrão
+   */
   getCapaUrl(): string {
-    if (!this.playlist) return 'assets/images/capa-playlist/capa-playlist.svg';
-    const fromLivro = this.playlist.livros && this.playlist.livros.length ? this.playlist.livros[0].urlCapa : null;
-    return fromLivro || this.playlist.imagemUrl || 'assets/images/fallbacks/capa-playlist-fallback.png';
+    if (!this.playlist) {
+      return 'assets/images/capa-playlist/capa-playlist.svg';
+    }
+
+    const IMAGEM_PADRAO = 'assets/images/capa-playlist/capa-playlist.svg';
+
+    // Se a playlist tem uma imagem personalizada (não é a padrão), usa ela
+    if (this.playlist.imagemUrl &&
+      this.playlist.imagemUrl.trim() &&
+      this.playlist.imagemUrl !== IMAGEM_PADRAO) {
+      console.log('🖼️ Usando imagemUrl personalizada:', this.playlist.imagemUrl);
+      return this.playlist.imagemUrl;
+    }
+
+    // Se não tem imagem personalizada mas tem livros, usa a capa do ÚLTIMO livro
+    if (this.playlist.livros && this.playlist.livros.length > 0) {
+      const ultimoLivro = this.playlist.livros[this.playlist.livros.length - 1];
+      if (ultimoLivro.urlCapa) {
+        console.log('📚 Usando capa do último livro:', ultimoLivro.titulo);
+        return ultimoLivro.urlCapa;
+      }
+    }
+
+    // Fallback: imagem padrão
+    console.log('⚠️ Usando imagem padrão');
+    return IMAGEM_PADRAO;
   }
 
   getFotoPerfilUrl(fotoPerfilUrl?: string | null): string {
