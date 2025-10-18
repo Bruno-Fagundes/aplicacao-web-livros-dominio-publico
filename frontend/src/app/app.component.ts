@@ -3,11 +3,12 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { HeaderComponent } from './shared/header/header.component';
+import { FooterComponent } from "./shared/footer/footer.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, RouterOutlet],
+  imports: [HeaderComponent, RouterOutlet, FooterComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
