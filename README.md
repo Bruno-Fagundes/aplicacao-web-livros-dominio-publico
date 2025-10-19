@@ -33,7 +33,7 @@ Contém os livros e os autores disponíveis no site que podem ser vistos de form
 
 **Backend:** Java 17, Spring Boot
 
-**Frontend:** Angular 22, ng2-pdf-viewer (biblioteca javascript para executar o pdf direto no navegador)
+**Frontend:** Angular 19, ng2-pdf-viewer (biblioteca javascript para executar o pdf direto no navegador)
 
 **Banco de Dados**: PostgreSQL
 
