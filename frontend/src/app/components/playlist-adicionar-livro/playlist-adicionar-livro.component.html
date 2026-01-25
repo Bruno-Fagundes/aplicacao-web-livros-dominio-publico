@@ -1,0 +1,67 @@
+<div class="modal-overlay" (click)="fechar()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Adicionar Livro</h2>
+      <button class="fechar-btn" (click)="fechar()">×</button>
+    </div>
+
+    <div class="search-container">
+      <!-- ⭐️ CORREÇÃO 1: Adicionar (ngModelChange) e (input) -->
+      <input
+        type="text"
+        placeholder="Pesquisar por título do livro..."
+        [(ngModel)]="termoBusca"
+        (ngModelChange)="onTermoChange()"
+        (input)="onTermoChange()"
+        autocomplete="off"
+      />
+
+      <div class="loading-spinner" *ngIf="carregandoBusca"></div>
+    </div>
+
+    <div
+      class="resultados"
+      *ngIf="sugestoesLivros.length > 0 && !carregandoBusca"
+    >
+      <h3>{{ sugestoesLivros.length }} livro(s) encontrado(s):</h3>
+
+      <div
+        *ngFor="let livro of sugestoesLivros; trackBy: trackByLivroId"
+        class="livro-sugestao"
+      >
+        <img
+          [src]="livro.urlCapa || 'assets/images/placeholder-book.jpg'"
+          [alt]="'Capa do livro ' + livro.titulo"
+          class="capa-sugestao"
+        />
+
+        <div class="info-sugestao">
+          <h4>{{ livro.titulo }}</h4>
+          <p>
+            {{ livro.autor.nome || "Autor não informado" }}
+          </p>
+        </div>
+
+        <button class="btn-adicionar" (click)="adicionarLivro(livro.livroId)">
+          Adicionar
+        </button>
+      </div>
+    </div>
+    <div
+      class="mensagem-vazio"
+      *ngIf="
+        !carregandoBusca &&
+        sugestoesLivros.length === 0 &&
+        termoBusca.length === 0
+      "
+    >
+      🔍 Nenhum livro encontrado para "{{ termoBusca }}".<br />
+      Tente termos diferentes ou verifique a ortografia.
+    </div>
+
+    <div
+      class="mensagem-inicial"
+      *ngIf="termoBusca.length >= 1 && !carregandoBusca"
+    ></div>
+  </div>
+</div>

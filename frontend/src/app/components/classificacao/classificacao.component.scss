@@ -1,0 +1,41 @@
+.estrelas-interativas {
+  display: flex;
+  gap: 8px; /* Aumentei um pouco a distância entre as estrelas */
+  align-items: center;
+  
+  // NOVO: Use margin-top para empurrar o bloco de estrelas para baixo.
+  // Você pode precisar ajustar este valor (ex: 150px, 200px) dependendo da altura real da capa do livro.
+  margin-top: 80px; 
+}
+
+.estrela-wrap {
+  cursor: pointer;
+  
+  // AUMENTO DE TAMANHO: Deixando as estrelas maiores (de 32px para 48px)
+  width: 48px; 
+  height: 48px;
+  
+  // Mantendo o layout para centralizar a imagem
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0;
+}
+
+.estrela-img {
+  // Garante que a imagem preencha o novo tamanho de 48px
+  width: 100%;
+  height: 100%;
+  
+  object-fit: contain; 
+  padding: 0; 
+  
+  display: block; 
+}
+
+.login-msg {
+    // Apenas para garantir que a mensagem de login esteja alinhada
+    padding-top: 5px; 
+}

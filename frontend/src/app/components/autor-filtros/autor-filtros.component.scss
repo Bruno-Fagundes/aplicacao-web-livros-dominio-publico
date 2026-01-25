@@ -1,0 +1,36 @@
+/* autor-filtros.component.scss */
+.filtros-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem; /* Adiciona uma margem inferior para separar dos cards de autor */
+}
+
+.filtro-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+label {
+  /* Estilo do label igual ao dos filtros de livros */
+  font-weight: 600;
+  color: #333;
+}
+
+select {
+  /* Estilo do select igual ao dos filtros de livros */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border 0.2s ease;
+  font-family: inherit; /* Garante que a fonte seja a mesma do elemento pai */
+
+  &:focus {
+    border-color: #dc2626;
+    outline: none;
+  }
+}

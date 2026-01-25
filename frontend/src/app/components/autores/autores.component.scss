@@ -1,0 +1,136 @@
+/* Estilos globais para a homepage e páginas com layout similar */
+.container-homepage {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Títulos de seção padronizados */
+.section-livros h2,
+.section-autores h2 {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #dc2626;
+  padding-bottom: 10px;
+}
+
+/* Layout de grid para cards de livros e autores */
+.livros-grid,
+.autores-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  padding: 10px;
+}
+
+/* Estilos gerais para todos os cards (livros e autores) */
+.livro-card,
+.autor-card {
+  text-align: center;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  text-decoration: none; /* Estilo para links */
+  color: inherit;
+  display: block;
+}
+
+.livro-card:hover,
+.autor-card:hover {
+  transform: translateY(-5px);
+}
+
+.livro-info,
+.autor-info {
+  margin-top: 10px;
+  font-weight: bolder;
+}
+
+h3 {
+  font-size: 1em;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+p {
+  font-size: 0.9em;
+  color: #dc2626;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Estilos Específicos para a imagem da capa do livro */
+.livro-card img.capa-livro {
+  width: 100%;
+  height: 225px; 
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos Específicos para a foto do autor */
+.autor-card img.foto-autor {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 10px; /* Bordas arredondadas como as capas */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Paginação (mantida) */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 8px;
+  
+  button {
+    min-width: 35px;
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background: #f5f5f5;
+      border-color: #bbb;
+    }
+    
+    &.active {
+      background: #dc2626;
+      color: #fff;
+      font-weight: bold;
+      border-color: #dc2626;
+    }
+  }
+}
+
+/* Responsividade padronizada */
+@media (max-width: 992px) {
+  .livros-grid, .autores-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .livros-grid, .autores-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .livros-grid, .autores-grid {
+    grid-template-columns: 1fr;
+  }
+}

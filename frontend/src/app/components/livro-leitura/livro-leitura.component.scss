@@ -1,0 +1,311 @@
+/* livro-leitura.component.scss
+   Estilos específicos do componente de leitura (escopados)
+*/
+
+/* Variáveis locais do componente (use hex/valor direto se preferir) */
+:host {
+  --brand-red: #dc2626;
+  --brand-red-dark: #b91c1c;
+  --leitura-side-gap: 150px;
+  --leitura-header-height: 120px; /* reduzido de 160px para 120px */
+  --content-top-gap: 70px;
+  --sidebar-padding-left: 50px;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* ======================
+   HEADER - garante visibilidade do botão voltar
+   ====================== */
+:host .leitura-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 60px;
+  padding: 14px var(--leitura-side-gap); /* padding vertical reduzido para combinar com header menor */
+  background: #fafafa;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  box-sizing: border-box;
+  min-height: var(--leitura-header-height);
+  position: relative;
+  z-index: 20;
+}
+
+/* Área esquerda do header (onde está o botão voltar) */
+:host .leitura-header .acoes-header {
+  grid-column: 1 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 0;
+}
+
+/* Título central */
+:host .leitura-header .titulo {
+  grid-column: 2 / 3;
+  justify-self: center;
+  align-self: center;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Espaço direito (se houver ações extra) */
+:host .leitura-header .header-right {
+  grid-column: 3 / 4;
+  justify-self: end;
+  align-self: center;
+}
+
+/* ======================
+   BOTÕES - estilo consistente e z-index para não serem cobertos
+   ====================== */
+:host .btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.18s ease, background-color 0.18s ease;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+}
+
+/* primário */
+:host .btn-primary {
+  background-color: var(--brand-red);
+  color: #fff;
+}
+
+/* hover primário */
+:host .btn-primary:hover {
+  background-color: var(--brand-red-dark);
+  transform: translateY(-2px);
+}
+
+/* botão voltar - aumentado para destaque */
+:host .btn-voltar {
+  background-color: var(--brand-red);
+  color: #fff;
+  padding: 12px 20px;       /* aumentado */
+  border-radius: 8px;       /* levemente arredondado */
+  font-size: 16px;          /* fonte maior */
+  font-weight: 700;
+  z-index: 40;              /* garantia de visibilidade */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* evita que qualquer regra genérica o esconda */
+:host .acoes-header .btn,
+:host .acoes-header .btn-voltar {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none;
+}
+
+/* ======================
+   BODY / SIDEBAR
+   ====================== */
+:host .leitura-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding-top: var(--content-top-gap);
+}
+
+/* Sidebar - escopo específico para evitar conflito com seletores globais */
+:host .sidebar {
+  width: 260px;
+  padding: 30px 16px 16px var(--sidebar-padding-left);
+  border-right: 1px solid rgba(0,0,0,0.04);
+  background: #fff;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+/* Card dentro da sidebar */
+:host .sidebar .card {
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  margin-left: 0; /* remove margens conflitantes */
+}
+
+/* Navegação apenas dentro da sidebar (escopo!) */
+:host .sidebar .navegacao {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* botões de paginação dentro da sidebar - agora mais largos */
+:host .sidebar .navegacao button {
+  padding: 12px 18px;
+  min-width: 80px;   /* aumentado para ficar mais largo */
+  height: 52px;      /* um pouco mais alto para boa área de clique */
+  border-radius: 10px;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-red);
+  color: white;
+  border: none;
+  transition: transform 0.18s ease, background-color 0.18s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+:host .sidebar .navegacao button:hover {
+  background: var(--brand-red-dark);
+  transform: translateY(-2px);
+}
+
+/* ======================
+   PDF WRAPPER (viewer)
+   ====================== */
+:host .pdf-wrapper {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* garantir que o viewer interno respeite a altura do header.
+   Recomendo remover o style inline do <pdf-viewer> para que essa regra funcione. */
+:host .pdf-wrapper > * {
+  width: 100%;
+  height: calc(100vh - var(--leitura-header-height));
+  max-height: calc(100vh - var(--leitura-header-height));
+  box-sizing: border-box;
+}
+
+/* ======================
+   Scrollbar (pseudo-elementos precisam de ::ng-deep em estilos de componente)
+   ====================== */
+:host ::ng-deep .pdf-wrapper::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+:host ::ng-deep .pdf-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+}
+
+:host ::ng-deep .pdf-wrapper::-webkit-scrollbar-thumb {
+  background-color: var(--brand-red);
+  border-radius: 999px;
+  border: 3px solid rgba(0,0,0,0.06);
+}
+
+:host ::ng-deep .pdf-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: var(--brand-red-dark);
+}
+
+/* fallback Firefox (scoped) */
+:host .pdf-wrapper,
+:host .pdf-wrapper * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-red) transparent;
+}
+
+/* ======================
+   Loading / Error
+   ====================== */
+:host .loading-container,
+:host .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+:host .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--brand-red);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ======================
+   RESPONSIVO
+   ====================== */
+@media (max-width: 900px) {
+  :host {
+    --leitura-side-gap: 16px;
+    --content-top-gap: 20px;
+    --leitura-header-height: 80px;
+    --sidebar-padding-left: 16px;
+  }
+
+  :host .leitura-header {
+    grid-template-columns: 1fr;
+    padding: 12px 16px;
+    gap: 8px;
+    min-height: auto;
+  }
+
+  :host .leitura-header .acoes-header { justify-self: start; order: 1; }
+  :host .leitura-header .titulo { justify-self: start; order: 2; }
+
+  /* adapta tamanho do botão voltar no mobile */
+  :host .btn-voltar {
+    padding: 10px 14px;
+    font-size: 15px;
+  }
+
+  :host .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    padding: 12px;
+  }
+
+  :host .leitura-body {
+    flex-direction: column;
+    padding-top: var(--content-top-gap);
+  }
+
+  :host .pdf-wrapper > * {
+    height: calc(100vh - var(--leitura-header-height) - 20px);
+  }
+
+  /* paginação no mobile fica um pouco menor para caber melhor */
+  :host .sidebar .navegacao button {
+    min-width: 64px;
+    height: 44px;
+    padding: 10px 12px;
+  }
+}

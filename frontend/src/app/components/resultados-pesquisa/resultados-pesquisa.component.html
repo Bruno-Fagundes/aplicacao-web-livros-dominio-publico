@@ -1,0 +1,44 @@
+<!-- src/app/components/search-results/search-results.component.html -->
+<div class="container-homepage">
+  <h2>Resultados da Pesquisa para: "{{ termoBusca }}"</h2>
+
+  <div *ngIf="carregando" class="loading-container">
+    <div class="spinner"></div>
+    <p>Carregando resultados...</p>
+  </div>
+
+  <ng-container *ngIf="!carregando">
+    <h3>Livros Encontrados ({{ livrosEncontrados.length }})</h3>
+    <div class="livros-grid">
+      <div *ngFor="let livro of livrosEncontrados" class="livro-card">
+        <a [routerLink]="['/livros', livro.livroId]">
+          <img [src]="livro.urlCapa" class="capa-livro" />
+          <div class="livro-info">
+            <h3>{{ livro.titulo }}</h3>
+            <p>{{ livro.autor.nome }}</p>
+          </div>
+        </a>
+      </div>
+      <div *ngIf="livrosEncontrados.length === 0">
+        <p>Nenhum livro encontrado.</p>
+      </div>
+    </div>
+
+    <hr />
+
+    <h3>Autores Encontrados ({{ autoresEncontrados.length }})</h3>
+    <div class="autores-grid">
+      <div *ngFor="let autor of autoresEncontrados" class="autor-card">
+        <a [routerLink]="['/autores', autor.autorId]">
+          <img [src]="autor.urlFoto" class="foto-autor" />
+          <div class="autor-info">
+            <h3>{{ autor.nome }}</h3>
+          </div>
+        </a>
+      </div>
+      <div *ngIf="autoresEncontrados.length === 0">
+        <p>Nenhum autor encontrado.</p>
+      </div>
+    </div>
+  </ng-container>
+</div>

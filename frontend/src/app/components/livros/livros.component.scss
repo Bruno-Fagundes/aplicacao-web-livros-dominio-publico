@@ -1,0 +1,190 @@
+/* livros.component.scss */
+
+/* Estilos globais para a homepage e páginas com layout similar */
+.container-homepage {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Títulos de seção padronizados */
+.section-livros h2,
+.section-autores h2 {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #dc2626;
+  padding-bottom: 10px;
+}
+
+/* Layout de grid para cards de livros e autores */
+.livros-grid,
+.autores-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  padding: 10px;
+}
+
+/* Estilos gerais para todos os cards (livros e autores) */
+.livro-card,
+.autor-card {
+  text-align: center;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.livro-card:hover,
+.autor-card:hover {
+  transform: translateY(-5px);
+}
+
+.livro-info,
+.autor-info {
+  margin-top: 10px;
+  font-weight: bolder;
+}
+
+h3 {
+  font-size: 1em;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+p {
+  font-size: 0.9em;
+  color: #dc2626;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Estilos Específicos para a imagem da capa do livro */
+.livro-card img.capa-livro {
+  width: 100%;
+  height: 225px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos Específicos para a foto do autor */
+.autor-card img.foto-autor {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Paginação (mantida) */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 8px;
+
+  button {
+    min-width: 35px;
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background: #f5f5f5;
+      border-color: #bbb;
+    }
+
+    &.active {
+      background: #dc2626;
+      color: #fff;
+      font-weight: bold;
+      border-color: #dc2626;
+    }
+  }
+}
+
+/* Responsividade padronizada */
+@media (max-width: 992px) {
+  .livros-grid, .autores-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .livros-grid, .autores-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .livros-grid, .autores-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ⭐️ DEFINIÇÕES DE BOTÕES: Certifique-se de que estas classes estejam disponíveis */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  white-space: nowrap; /* Impede que o texto quebre */
+}
+
+.btn-primary {
+  background-color: #dc2626;
+  color: white;
+  &:hover {
+    background-color: #b91c1c;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-secondary {
+  background-color: #dc2626;
+  color: white;
+  &:hover {
+    background-color: #b91c1c;
+    transform: translateY(-2px);
+  }
+}
+/* FIM DAS DEFINIÇÕES DE BOTÕES */
+
+/* Estilo para o botão "Carregar Mais" */
+.btn-carregar-mais {
+  display: block; /* Para centralizar o botão com margin auto */
+  width: 200px; /* Largura fixa para ficar parecido com os outros */
+  margin: 20px auto; /* Centraliza e adiciona margem superior */
+  text-align: center; /* Centraliza o texto dentro do botão */
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #ccc; /* Cor diferente quando desabilitado */
+    color: #666;
+  }
+}
+
+/* Adicione esta classe para o espaçamento dos filtros */
+.filtros-wrapper {
+  margin-bottom: 2rem; /* Espaçamento entre os filtros e a grid de livros */
+}

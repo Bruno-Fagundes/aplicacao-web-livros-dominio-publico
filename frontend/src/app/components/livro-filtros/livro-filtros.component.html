@@ -1,0 +1,31 @@
+<div class="filtros-container">
+  <label for="genero">Gênero:</label>
+  <select id="genero" [(ngModel)]="selectedGenero" (change)="onGeneroChange()">
+    <option value="">Todos</option>
+    <option *ngFor="let genero of generos" [value]="genero">
+      {{ genero }}
+    </option>
+  </select>
+
+  <label for="subgenero">Subgênero:</label>
+  <select
+    id="subgenero"
+    [(ngModel)]="selectedSubgenero"
+    (change)="onSubgeneroChange()"
+  >
+    <option value="">Todos</option>
+    <option *ngFor="let sub of subgeneros" [value]="sub">{{ sub }}</option>
+  </select>
+
+  <label for="ordenar">Ordenar por:</label>
+  <select
+    id="ordenar"
+    [(ngModel)]="selectedOrdenar"
+    (change)="onOrdenarChange()"
+  >
+    <option value="">Padrão</option>
+    <option *ngFor="let ordem of ordenacoes" [value]="ordem.value">
+      {{ ordem.label }}
+    </option>
+  </select>
+</div>

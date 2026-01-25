@@ -1,0 +1,135 @@
+<div class="modal-overlay" (click)="fechar()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Header do Modal -->
+    <div class="modal-header">
+      <h2>Editar Playlist</h2>
+      <button
+        class="btn-fechar"
+        (click)="fechar()"
+        type="button"
+        title="Fechar"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- Conteúdo do Modal -->
+    <div class="modal-content">
+      <!-- Loading -->
+      <div *ngIf="carregando && !playlist" class="loading-container">
+        <div class="spinner"></div>
+        <p>Carregando...</p>
+      </div>
+
+      <!-- Formulário -->
+      <form
+        *ngIf="!carregando || playlist"
+        [formGroup]="form"
+        (ngSubmit)="salvar()"
+      >
+        <!-- Campo Título -->
+        <div class="form-group">
+          <label for="titulo">Título *</label>
+          <input
+            id="titulo"
+            type="text"
+            formControlName="titulo"
+            [class.input-error]="titulo?.invalid && titulo?.touched"
+            placeholder="Ex: Minhas Leituras de 2024"
+          />
+          <div class="error-message" *ngIf="titulo?.invalid && titulo?.touched">
+            O título é obrigatório (mínimo 2 caracteres)
+          </div>
+        </div>
+
+        <!-- Campo Descrição -->
+        <div class="form-group">
+          <label for="descricao">Descrição</label>
+          <textarea
+            id="descricao"
+            formControlName="descricao"
+            placeholder="Descreva sua playlist..."
+          ></textarea>
+        </div>
+
+        <!-- Campo URL da Imagem -->
+        <div class="form-group">
+          <label for="imagemUrl">Imagem (URL)</label>
+          <input
+            id="imagemUrl"
+            type="text"
+            formControlName="imagemUrl"
+            placeholder="https://exemplo.com/imagem.jpg"
+          />
+
+          <!-- Preview da Imagem -->
+          <div class="image-preview" *ngIf="imagemPreview">
+            <img [src]="imagemPreview" alt="Preview da capa" />
+          </div>
+        </div>
+
+        <!-- Seção de Livros -->
+        <div class="livros-section" *ngIf="playlist">
+          <h3>Livros nesta Playlist ({{ playlist.livros?.length || 0 }})</h3>
+
+          <div
+            class="sem-livros"
+            *ngIf="!playlist.livros || playlist.livros.length === 0"
+          >
+            Nenhum livro adicionado ainda
+          </div>
+
+          <div
+            class="livros-lista"
+            *ngIf="playlist.livros && playlist.livros.length > 0"
+          >
+            <div class="livro-item" *ngFor="let livro of playlist.livros">
+              <img
+                [src]="livro.urlCapa"
+                [alt]="livro.titulo"
+                class="livro-capa"
+              />
+              <div class="livro-info">
+                <h4>{{ livro.titulo }}</h4>
+                <p *ngIf="livro.autor">{{ livro.autor }}</p>
+              </div>
+              <button
+                type="button"
+                class="btn-remover"
+                (click)="removerLivro(livro.livroId)"
+                [disabled]="carregando"
+              >
+                Remover
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensagem de Erro -->
+        <div class="error-container" *ngIf="erroMsg">
+          {{ erroMsg }}
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer do Modal (Botões) -->
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="fechar()"
+        [disabled]="carregando"
+      >
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="salvar()"
+        [disabled]="carregando || form.invalid"
+      >
+        {{ carregando ? "Salvando..." : "Salvar Alterações" }}
+      </button>
+    </div>
+  </div>
+</div>

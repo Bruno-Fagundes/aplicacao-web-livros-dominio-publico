@@ -1,0 +1,81 @@
+<head>
+  <title>Cadastro</title>
+</head>
+
+<div class="cadastro-container">
+  <div class="cadastro-card">
+    <!-- use (ngSubmit) e remova action/method -->
+    <form [formGroup]="cadastroForm" (ngSubmit)="onSubmit($event)" novalidate>
+      <div class="alert alert-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+      <div class="alert alert-success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div class="form-row">
+        <label for="nomeUsuario">Usuário</label>
+        <input
+          id="nomeUsuario"
+          type="text"
+          formControlName="nomeUsuario"
+          placeholder="Escolha um nome de usuário"
+        />
+        <div class="error" *ngIf="getErrorMessage('nomeUsuario')">
+          {{ getErrorMessage("nomeUsuario") }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="email">E-mail</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="seu@exemplo.com"
+        />
+        <div class="error" *ngIf="getErrorMessage('email')">
+          {{ getErrorMessage("email") }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="senha">Senha</label>
+        <input
+          id="senha"
+          type="password"
+          formControlName="senha"
+          placeholder="senha123"
+        />
+        <div class="error" *ngIf="getErrorMessage('senha')">
+          {{ getErrorMessage("senha") }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="confirmarSenha">Confirmar Senha</label>
+        <input
+          id="confirmarSenha"
+          type="password"
+          formControlName="confirmarSenha"
+          placeholder="Repita a senha"
+        />
+        <div class="error" *ngIf="getErrorMessage('confirmarSenha')">
+          {{ getErrorMessage("confirmarSenha") }}
+        </div>
+      </div>
+
+      <div class="field">
+        <a href="/login">Já tem uma conta? Faça login</a>
+      </div>
+
+      <div class="form-actions">
+        <!-- botão submit normal; (ngSubmit) evita submit nativo -->
+        <button class="btn-primary" type="submit" [disabled]="loading">
+          <span *ngIf="!loading">CADASTRAR</span>
+          <span *ngIf="loading">Cadastrando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

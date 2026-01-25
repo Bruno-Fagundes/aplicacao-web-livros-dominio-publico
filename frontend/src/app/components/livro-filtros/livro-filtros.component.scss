@@ -1,0 +1,40 @@
+.header-livros {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 3px solid #dc2626;
+  padding-bottom: 10px;
+
+  .titulo-livros {
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+  }
+}
+
+.filtros-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border 0.2s ease;
+
+    &:focus {
+      border-color: #dc2626;
+      outline: none;
+    }
+  }
+}

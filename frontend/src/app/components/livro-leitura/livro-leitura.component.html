@@ -1,0 +1,46 @@
+<div
+  class="leitura-container"
+  *ngIf="!carregando && !erro; else loadingOrError"
+>
+  <header class="leitura-header">
+    <div class="acoes-header">
+      <button (click)="voltarDetalhes()" class="btn btn-primary btn-voltar">
+        ← Voltar
+      </button>
+    </div>
+    <div class="titulo">Leitura de {{ tituloLivro }}</div>
+  </header>
+
+  <div class="leitura-body">
+    <aside class="sidebar">
+      <div class="card">
+        <p>Página atual: {{ paginaAtual }} / {{ totalPaginas || "—" }}</p>
+
+        <div class="navegacao">
+          <button (click)="irParaPaginaPrev()" class="btn btn-primary">
+            ◀
+          </button>
+          <button (click)="irParaPaginaNext()" class="btn btn-primary">
+            ▶
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="pdf-wrapper">
+      <pdf-viewer
+        [src]="pdfUrl"
+        [page]="paginaAtual"
+        [show-all]="false"
+        [original-size]="true"
+        (after-load-complete)="pageLoaded($event)"
+        style="width: 100%; height: calc(100vh - 80px); display: block"
+      ></pdf-viewer>
+    </main>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div *ngIf="carregando">Carregando PDF...</div>
+  <div *ngIf="erro">Erro ao carregar o PDF.</div>
+</ng-template>

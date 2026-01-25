@@ -1,0 +1,83 @@
+<div class="container-homepage">
+  <div class="livro-container">
+    <div *ngIf="carregando" class="loading-container">
+      <div class="spinner"></div>
+      <p>Carregando livros e autores...</p>
+    </div>
+
+    <div *ngIf="erro && !carregando" class="error-container">
+      <h2>Erro ao carregar a página</h2>
+      <p>
+        Não foi possível carregar os livros e os autores. Por favor, tente novamente mais
+        tarde.
+      </p>
+      <button (click)="carregarLivrosPopulares()" class="btn-retry">
+        Tentar Novamente
+      </button>
+    </div>
+
+    <ng-container *ngIf="!carregando && !erro">
+      <div class="section-livros">
+        <h2>LIVROS POPULARES</h2>
+        <div class="livros-grid">
+          <div *ngFor="let livro of livrosPopulares" class="livro-card">
+            <a [routerLink]="['/livros', livro.livroId]">
+              <img
+                [src]="livro.urlCapa"
+                [alt]="'Capa do livro ' + livro.titulo"
+                class="capa-livro"
+              />
+              <div class="livro-info">
+                <h3>{{ livro.titulo }}</h3>
+                <p>{{ livro.anoPublicacao }}</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paginação Livros -->
+      <div class="pagination" *ngIf="totalPaginasLivros > 1">
+        <button
+          *ngFor="let page of [].constructor(totalPaginasLivros); let i = index"
+          (click)="carregarLivrosPopulares(i)"
+          [class.active]="i === paginaLivros"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+
+      <div class="section-autores">
+        <h2>AUTORES POPULARES</h2>
+        <div class="autores-grid">
+          <div *ngFor="let autor of autoresPopulares" class="autor-card">
+            <a [routerLink]="['/autores', autor.autorId]">
+              <img
+                [src]="autor.urlFoto"
+                [alt]="'Foto do autor ' + autor.nome"
+                class="foto-autor"
+              />
+              <div class="autor-info">
+                <h3>{{ autor.nome }}</h3>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paginação Autores -->
+      <div class="pagination" *ngIf="totalPaginasAutores > 1">
+        <button
+          *ngFor="
+            let page of [].constructor(totalPaginasAutores);
+            let i = index
+          "
+          (click)="carregarAutoresPopulares(i)"
+          [class.active]="i === paginaAutores"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>
