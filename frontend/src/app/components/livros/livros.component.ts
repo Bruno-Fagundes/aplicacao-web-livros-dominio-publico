@@ -26,7 +26,8 @@ export class LivrosComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private livroService: LivroService  // ← ADICIONE ISSO
   ) { }
 
   ngOnInit(): void {
@@ -35,7 +36,31 @@ export class LivrosComponent implements OnInit, OnDestroy {
       .subscribe(usuario => {
         this.usuarioLogado = usuario;
       });
+    
+    // ========== ADICIONE ISSO ==========
+    this.carregarLivrosIniciais();
   }
+
+  carregarLivrosIniciais(): void {
+    this.carregando = true;
+    this.livroService.listarLivrosPaginados(this.page, this.size)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('Dados recebidos:', response); // ← Para debug
+          this.livros = response.content;
+          this.lastPage = response.last;
+          this.carregando = false;
+          this.erro = false;
+        },
+        error: (error) => {
+          console.error('Erro ao carregar livros:', error);
+          this.carregando = false;
+          this.erro = true;
+        }
+      });
+  }
+  // =====================================
 
   onLivrosFiltrados(response: any) {
     if (this.page === 0) {
@@ -53,9 +78,24 @@ export class LivrosComponent implements OnInit, OnDestroy {
   }
 
   carregarMaisLivros(): void {
-    if (!this.lastPage) {
+    if (!this.lastPage && !this.carregando) {
       this.carregando = true;
       this.page++;
+      
+      this.livroService.listarLivrosPaginados(this.page, this.size)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            this.livros = [...this.livros, ...response.content];
+            this.lastPage = response.last;
+            this.carregando = false;
+          },
+          error: (error) => {
+            console.error('Erro ao carregar mais livros:', error);
+            this.carregando = false;
+            this.erro = true;
+          }
+        });
     }
   }
 
