@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/livros/{livroId}/classificacao")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://literaturapublica.vercel.app")
 @RequiredArgsConstructor
 public class ClassificacaoController {
 
