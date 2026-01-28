@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/playlists")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://literaturapublica.vercel.app")
 @RequiredArgsConstructor
 public class PlaylistController {
 
