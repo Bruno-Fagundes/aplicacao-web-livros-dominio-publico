@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/livros")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://literaturapublica.vercel.app")
 @RequiredArgsConstructor
 public class LivroController {
 
