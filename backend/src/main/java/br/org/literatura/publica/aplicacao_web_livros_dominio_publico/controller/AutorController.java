@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/autores")
-@CrossOrigin(origins = "https://literaturapublica.vercel.app/")
+@CrossOrigin(origins = "https://literaturapublica.vercel.app")
 @RequiredArgsConstructor
 public class AutorController {
 
