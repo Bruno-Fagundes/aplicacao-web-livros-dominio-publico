@@ -12,7 +12,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/debug")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://literaturapublica.vercel.app")
 public class DebugController {
 
     private final UsuarioRepository usuarioRepository;
