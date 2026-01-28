@@ -18,7 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://literaturapublica.vercel.app/", maxAge = 3600)
+@CrossOrigin(origins = "https://literaturapublica.vercel.app", maxAge = 3600)
 public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
