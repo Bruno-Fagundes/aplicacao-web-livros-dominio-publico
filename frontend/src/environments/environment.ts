@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://136.113.139.75:8080'
+  apiUrl: 'unvolitional-insensately-mazie.ngrok-free.dev'
 };
