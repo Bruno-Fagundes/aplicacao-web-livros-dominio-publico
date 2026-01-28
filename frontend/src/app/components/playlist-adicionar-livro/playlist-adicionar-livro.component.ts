@@ -1,120 +1,102 @@
-import { Component, Input, Output, EventEmitter, OnDestroy, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { LivroDetalhes } from '../../interfaces/livro.interface';
-import { PesquisaService } from '../../services/pesquisa.service';
-import { PlaylistService } from '../../services/playlist.service';
-import { Router } from '@angular/router';
+import { Usuario } from '../../interfaces/usuario.interface';
+import { Subject, takeUntil } from 'rxjs';
+import { LivroService } from '../../services/livro.service';
+import { AuthService } from '../../services/auth.service';
+import { LivroFiltrosComponent } from "../livro-filtros/livro-filtros.component";
 
 @Component({
-  selector: 'app-playlist-adicionar-livro',
-  templateUrl: './playlist-adicionar-livro.component.html',
-  styleUrls: ['./playlist-adicionar-livro.component.scss'],
-  standalone: true,
-  imports: [CommonModule, FormsModule]
+  selector: 'app-livros',
+  imports: [CommonModule, RouterModule, LivroFiltrosComponent],
+  templateUrl: './livros.component.html',
+  styleUrl: './livros.component.scss'
 })
-export class PlaylistAdicionarLivroComponent implements OnInit, OnDestroy {
-  @Input() playlistId!: number;
-  @Output() livroAdicionado = new EventEmitter<void>();
-  @Output() fecharModal = new EventEmitter<void>();
-
-  termoBusca: string = '';
-  sugestoesLivros: LivroDetalhes[] = [];
-  carregandoBusca = false;
-
-  private termoBusca$ = new Subject<string>();
+export class LivrosComponent implements OnInit, OnDestroy {
+  carregando: boolean = true;
+  erro: boolean = false;
+  livros: LivroDetalhes[] = [];
+  page: number = 0;
+  size: number = 12;
+  lastPage: boolean = false;
+  usuarioLogado: Usuario | null = null;
+  ordenacaoAtual: string | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
-    private pesquisaService: PesquisaService,
-    private playlistService: PlaylistService,
-    private router: Router
+    private authService: AuthService,
+    private livroService: LivroService  // ← ADICIONE ISSO
   ) { }
 
   ngOnInit(): void {
-    // ⭐️ Configurar o observable no ngOnInit
-    this.termoBusca$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(termo => {
-      this.buscarLivros(termo);
-    });
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(usuario => {
+        this.usuarioLogado = usuario;
+      });
+    
+    // ========== ADICIONE ISSO ==========
+    this.carregarLivrosIniciais();
   }
 
-  // ⭐️ NOVO: Método chamado pelo template quando o usuário digita
-  onTermoChange(): void {
-    console.log('🔍 Termo alterado:', this.termoBusca);
-    this.termoBusca$.next(this.termoBusca);
+  carregarLivrosIniciais(): void {
+    this.carregando = true;
+    this.livroService.listarLivrosPaginados(this.page, this.size)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('Dados recebidos:', response); // ← Para debug
+          this.livros = response.content;
+          this.lastPage = response.last;
+          this.carregando = false;
+          this.erro = false;
+        },
+        error: (error) => {
+          console.error('Erro ao carregar livros:', error);
+          this.carregando = false;
+          this.erro = true;
+        }
+      });
   }
+  // =====================================
 
-  // ⭐️ Método alternativo usando setTimeout (caso o Subject dê problema)
-  onTermoChangeAlternativo(): void {
-    console.log('🔍 Busca alternativa para:', this.termoBusca);
-    setTimeout(() => {
-      this.buscarLivros(this.termoBusca);
-    }, 300);
-  }
-
-  // ⭐️ NOVO: Método para fechar o modal (chamado pelo template)
-  fechar(): void {
-    console.log('🔒 Fechando modal');
-    this.fecharModal.emit();
-  }
-
-  // Seu método original, mas com logs para debug
-  onTyping(): void {
-    this.termoBusca$.next(this.termoBusca);
-  }
-
-  buscarLivros(termo: string): void {
-    console.log('🔍 Buscando livros para termo:', termo);
-
-    if (termo.length <= 0) {
-      this.sugestoesLivros = [];
-      this.carregandoBusca = false;
-      return;
+  onLivrosFiltrados(response: any) {
+    if (this.page === 0) {
+      this.livros = response.content;
+    } else {
+      this.livros = [...this.livros, ...response.content];
     }
-
-    this.carregandoBusca = true;
-
-    this.pesquisaService.buscarLivrosPorTitulo(termo)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (livros: LivroDetalhes[]) => {
-          console.log('✅ Livros encontrados:', livros.length, livros);
-          this.sugestoesLivros = livros;
-          this.carregandoBusca = false;
-        },
-        error: (err: any) => {
-          console.error('❌ Erro ao buscar livros:', err);
-          this.sugestoesLivros = [];
-          this.carregandoBusca = false;
-        }
-      });
+    this.lastPage = response.last;
+    this.carregando = false;
+    this.erro = false;
   }
 
-  adicionarLivro(livroId: number): void {
-    console.log('📚 Adicionando livro ID:', livroId, 'na playlist:', this.playlistId);
-
-    this.playlistService.adicionarLivroNaPlaylist(this.playlistId, livroId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          console.log('✅ Livro adicionado com sucesso!');
-          alert('Livro adicionado com sucesso!');
-          this.livroAdicionado.emit();
-        },
-        error: (err: any) => {
-          console.error('❌ Erro ao adicionar livro:', err);
-          alert('Ocorreu um erro ao adicionar o livro.');
-        }
-      });
+  onOrdenacaoAlterada(ordenacao: string | null) {
+    this.ordenacaoAtual = ordenacao;
   }
 
-  trackByLivroId(index: number, livro: LivroDetalhes): number {
-    return livro.livroId;
+  carregarMaisLivros(): void {
+    if (!this.lastPage && !this.carregando) {
+      this.carregando = true;
+      this.page++;
+      
+      this.livroService.listarLivrosPaginados(this.page, this.size)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            this.livros = [...this.livros, ...response.content];
+            this.lastPage = response.last;
+            this.carregando = false;
+          },
+          error: (error) => {
+            console.error('Erro ao carregar mais livros:', error);
+            this.carregando = false;
+            this.erro = true;
+          }
+        });
+    }
   }
 
   ngOnDestroy(): void {
