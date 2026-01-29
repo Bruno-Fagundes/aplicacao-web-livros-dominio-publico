@@ -9,6 +9,7 @@ import { PlaylistAdicionarLivroComponent } from '../playlist-adicionar-livro/pla
 import { PlaylistEditarComponent } from '../playlist-editar/playlist-editar.component';
 import { ClassificacaoService } from '../../services/classificacao.service';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment'; // ← ADICIONE
 
 @Component({
   selector: 'app-playlist-detalhes',
@@ -29,6 +30,7 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private playlistId: number | null = null;
   private usuarioId: number | null = null;
+  private apiUrl = `${environment.apiUrl}/api/playlists`; // ← ADICIONE
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -140,7 +142,7 @@ export class PlaylistDetalhesComponent implements OnInit, OnDestroy {
   deletarPlaylist(): void {
     const confirmacao = confirm('Tem certeza que deseja deletar esta playlist?');
     if (confirmacao && this.playlist?.playlistId) {
-      this.http.delete('http://136.113.139.75:8080/api/playlists/${this.playlist.playlistId}').subscribe({
+      this.http.delete(`${this.apiUrl}/${this.playlist.playlistId}`).subscribe({ // ← CORRIGIDO
         next: () => {
           alert('Playlist deletada com sucesso!');
           this.router.navigate(['/usuarios', this.playlist?.usuario?.usuarioId]);
