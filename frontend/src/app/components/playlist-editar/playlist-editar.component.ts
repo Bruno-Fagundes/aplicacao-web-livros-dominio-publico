@@ -5,6 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { PlaylistService } from '../../services/playlist.service';
 import { Playlist } from '../../interfaces/playlist.interface';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment'; // ← ADICIONE
 
 @Component({
   selector: 'app-playlist-editar',
@@ -26,6 +27,7 @@ export class PlaylistEditarComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private readonly IMAGEM_PADRAO = 'assets/images/capa-playlist/capa-playlist.svg';
+  private apiUrl = `${environment.apiUrl}/api/playlists`; // ← ADICIONE
 
   constructor(
     private fb: FormBuilder,
@@ -143,7 +145,7 @@ export class PlaylistEditarComponent implements OnInit, OnDestroy {
     this.carregando = true;
     this.erroMsg = null;
 
-    this.http.delete(`http://136.113.139.75:8080/api/playlists/${this.playlistId}/livros/${livroId}`)
+    this.http.delete(`${this.apiUrl}/${this.playlistId}/livros/${livroId}`) // ← CORRIGIDO
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
