@@ -1,6 +1,7 @@
 import { HttpClient, HttpClientModule, HttpParams } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { LivroDetalhes } from '../../interfaces/livro.interface';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -16,6 +17,9 @@ export class LivroFiltrosComponent implements OnInit, OnChanges {
   @Output() ordenacaoAlterada = new EventEmitter<string | null>();
   @Input() page: number = 0;
   @Input() size: number = 12;
+
+  private apiUrl = `${environment.apiUrl}/api/livros`; // ← ADICIONE ISSO
+
   generos: string[] = [];
   subgeneros: string[] = [];
   ordenacoes = [
@@ -48,19 +52,19 @@ export class LivroFiltrosComponent implements OnInit, OnChanges {
   }
 
   carregarSubgeneros() {
-    this.http.get<string[]>('http://136.113.139.75:8080/api/livros/subgeneros')
+    this.http.get<string[]>(`${this.apiUrl}/subgeneros`) // ← CORRIGIDO
       .subscribe(r => this.subgeneros = r);
   }
 
   carregarGeneros() {
-    this.http.get<string[]>('http://136.113.139.75:8080/api/livros/generos')
+    this.http.get<string[]>(`${this.apiUrl}/generos`) // ← CORRIGIDO
       .subscribe(r => this.generos = r);
   }
 
   onGeneroChange() {
     this.page = 0;
     if (this.selectedGenero) {
-      this.http.get<string[]>('http://136.113.139.75:8080/api/livros/subgeneros', { params: { genero: this.selectedGenero } })
+      this.http.get<string[]>(`${this.apiUrl}/subgeneros`, { params: { genero: this.selectedGenero } }) // ← CORRIGIDO
         .subscribe(r => {
           this.subgeneros = r;
           this.selectedSubgenero = null;
@@ -82,7 +86,7 @@ export class LivroFiltrosComponent implements OnInit, OnChanges {
     if (this.selectedSubgenero) params = params.set('subgenero', this.selectedSubgenero);
     if (this.selectedOrdenar) params = params.set('ordenar', this.selectedOrdenar);
 
-    this.http.get<any>('http://136.113.139.75:8080/api/livros/filtrar', { params })
+    this.http.get<any>(`${this.apiUrl}/filtrar`, { params }) // ← CORRIGIDO
       .subscribe((resp) => {
         this.livrosFiltrados.emit(resp);
       });
