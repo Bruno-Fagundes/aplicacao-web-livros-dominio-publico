@@ -90,6 +90,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             path.startsWith("/playlists/") ||
             path.startsWith("/livros/pdf/") || 
             path.startsWith("/api/livros/pdf/") ||
+            path.startsWith("/api/livros/pdfs/") ||
             path.matches("/livros/\\d+$") ||        
             path.equals("/livros") ||                 
             path.matches("/livros/\\d+/detalhes$");    
