@@ -62,15 +62,22 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
         }
 
         if (dto.urlPdf) {
-          // CORREÇÃO: Usar environment.apiUrl para URLs relativas
-let urlFinal = dto.urlPdf;
-if (urlFinal.startsWith('/pdfs/livros/')) {
-  urlFinal = urlFinal.replace('/pdfs/livros/', '/api/livros/pdfs/');
-}
+          let urlFinal = dto.urlPdf;
+          
+          // Normalizar diferentes formatos de URL para o padrão /api/livros/pdfs/
+          if (urlFinal.startsWith('/pdfs/livros/')) {
+            urlFinal = urlFinal.replace('/pdfs/livros/', '/api/livros/pdfs/');
+          } else if (urlFinal.startsWith('/livros/pdf/')) {
+            urlFinal = urlFinal.replace('/livros/pdf/', '/api/livros/pdfs/');
+          } else if (urlFinal.startsWith('/pdf/livros/')) {
+            urlFinal = urlFinal.replace('/pdf/livros/', '/api/livros/pdfs/');
+          }
 
-this.pdfUrl = urlFinal.startsWith('http')
-  ? urlFinal
-  : `${environment.apiUrl}${urlFinal.startsWith('/') ? urlFinal : '/' + urlFinal}`;
+          this.pdfUrl = urlFinal.startsWith('http')
+            ? urlFinal
+            : `${environment.apiUrl}${urlFinal.startsWith('/') ? urlFinal : '/' + urlFinal}`;
+          
+          console.log('PDF URL final:', this.pdfUrl);
         } else {
           console.error('URL do PDF não encontrada');
           this.erro = true;
