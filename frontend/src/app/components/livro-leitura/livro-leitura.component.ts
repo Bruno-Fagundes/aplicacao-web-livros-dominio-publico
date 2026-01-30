@@ -63,9 +63,14 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
 
         if (dto.urlPdf) {
           // CORREÇÃO: Usar environment.apiUrl para URLs relativas
-          this.pdfUrl = dto.urlPdf.startsWith('http')
-            ? dto.urlPdf
-            : `${environment.apiUrl}${dto.urlPdf.startsWith('/') ? dto.urlPdf : '/' + dto.urlPdf}`;
+let urlFinal = dto.urlPdf;
+if (urlFinal.startsWith('/pdfs/livros/')) {
+  urlFinal = urlFinal.replace('/pdfs/livros/', '/api/livros/pdfs/');
+}
+
+this.pdfUrl = urlFinal.startsWith('http')
+  ? urlFinal
+  : `${environment.apiUrl}${urlFinal.startsWith('/') ? urlFinal : '/' + urlFinal}`;
         } else {
           console.error('URL do PDF não encontrada');
           this.erro = true;
