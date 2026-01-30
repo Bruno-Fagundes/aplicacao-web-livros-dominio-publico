@@ -49,25 +49,26 @@ public class LivroController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/pdf/{nomeAutor}/{nomeArquivo}")
-    public ResponseEntity<Resource> baixarPdf(@PathVariable String nomeAutor, @PathVariable String nomeArquivo) {
-        try {
-            String caminhoPdf = "classpath:static/pdfs/livros/" + nomeAutor + "/" + nomeArquivo;
-            Resource resource = resourceLoader.getResource(caminhoPdf);
+@GetMapping("/pdf/{nomeAutor}/{nomeArquivo}")
+public ResponseEntity<Resource> baixarPdf(@PathVariable String nomeAutor, @PathVariable String nomeArquivo) {
+    try {
+        java.nio.file.Path path = java.nio.file.Paths.get("/app/pdfs/livros/" + nomeAutor + "/" + nomeArquivo);
+        Resource resource = new org.springframework.core.io.FileSystemResource(path.toFile());
 
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_PDF)
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + nomeArquivo + "\"")
-                        .body(resource);
-            }
-
+        if (!resource.exists()) {
             return ResponseEntity.notFound().build();
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + nomeArquivo + "\"")
+                .header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                .body(resource);
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+}
 
     @GetMapping("")
     public List<LivroDto> listar() {
