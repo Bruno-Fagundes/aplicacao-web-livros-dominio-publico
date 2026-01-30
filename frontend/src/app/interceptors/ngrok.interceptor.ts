@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class NgrokInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+      console.log('🔧 NgrokInterceptor aplicado para:', req.url); // ← ADICIONE
     const ngrokReq = req.clone({
       setHeaders: {
         'ngrok-skip-browser-warning': 'true'
