@@ -10,12 +10,10 @@
     </div>
     <div class="titulo">Leitura de {{ tituloLivro }}</div>
   </header>
-
   <div class="leitura-body">
     <aside class="sidebar">
       <div class="card">
         <p>Página atual: {{ paginaAtual }} / {{ totalPaginas || "—" }}</p>
-
         <div class="navegacao">
           <button (click)="irParaPaginaPrev()" class="btn btn-primary">
             ◀
@@ -26,7 +24,6 @@
         </div>
       </div>
     </aside>
-
     <main class="pdf-wrapper">
       <pdf-viewer
         [src]="pdfUrl"
@@ -34,13 +31,11 @@
         [show-all]="false"
         [original-size]="true"
         (after-load-complete)="pageLoaded($event)"
-        [httpHeaders]="{ 'ngrok-skip-browser-warning': 'true' }"
         style="width: 100%; height: calc(100vh - 80px); display: block"
       ></pdf-viewer>
     </main>
   </div>
 </div>
-
 <ng-template #loadingOrError>
   <div *ngIf="carregando">Carregando PDF...</div>
   <div *ngIf="erro">Erro ao carregar o PDF.</div>
