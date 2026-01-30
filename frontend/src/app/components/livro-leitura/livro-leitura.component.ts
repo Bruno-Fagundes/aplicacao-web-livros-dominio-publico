@@ -61,11 +61,38 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
         }
 
         if (dto.urlPdf) {
-          this.pdfUrl = dto.urlPdf.startsWith('http')
-            ? dto.urlPdf
-            : dto.urlPdf.startsWith('/')
-              ? dto.urlPdf
-              : `/${dto.urlPdf}`;
+          let urlFinal = dto.urlPdf;
+          
+          // Se já é uma URL completa (http/https), usar diretamente
+          if (urlFinal.startsWith('http')) {
+            this.pdfUrl = urlFinal;
+          } else {
+            // Normalizar diferentes formatos de URL para o padrão /api/livros/pdf/ (SEM 's')
+            if (urlFinal.startsWith('/pdfs/livros/')) {
+              urlFinal = urlFinal.replace('/pdfs/livros/', '/api/livros/pdf/');
+            } else if (urlFinal.startsWith('/livros/pdf/')) {
+              urlFinal = urlFinal.replace('/livros/pdf/', '/api/livros/pdf/');
+            } else if (urlFinal.startsWith('/pdf/livros/')) {
+              urlFinal = urlFinal.replace('/pdf/livros/', '/api/livros/pdf/');
+            } else if (urlFinal.startsWith('/api/livros/pdfs/')) {
+              // Corrigir URLs antigas que usavam /pdfs/ com 's'
+              urlFinal = urlFinal.replace('/api/livros/pdfs/', '/api/livros/pdf/');
+            } else if (urlFinal.startsWith('/api/livros/pdf/')) {
+              // Já está correto
+              urlFinal = urlFinal;
+            } else if (!urlFinal.startsWith('/')) {
+              // Se não tem barra no início, adicionar o path completo
+              urlFinal = `/api/livros/pdf/${urlFinal}`;
+            } else {
+              // Qualquer outro caso, assume que é um path relativo
+              urlFinal = `/api/livros/pdf${urlFinal}`;
+            }
+            
+            this.pdfUrl = urlFinal;
+          }
+          
+          console.log('PDF URL original:', dto.urlPdf);
+          console.log('PDF URL final:', this.pdfUrl);
         } else {
           console.error('URL do PDF não encontrada');
           this.erro = true;
