@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http'; // Adicionado para download binário
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { LeituraService } from '../../services/leitura.service';
@@ -17,7 +18,7 @@ import { environment } from '../../../environments/environment';
 })
 export class LivroLeituraComponent implements OnInit, OnDestroy {
   public livroId = 0;
-  public pdfUrl = '';
+  public pdfUrl: any = ''; // Alterado para aceitar URL de objeto (Blob)
   public paginaAtual = 1;
   public totalPaginas = 0;
   public carregando = true;
@@ -34,7 +35,8 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
     private router: Router,
     private leituraService: LeituraService,
     private authService: AuthService,
-    private livroService: LivroService
+    private livroService: LivroService,
+    private http: HttpClient // Injetado para ativar os interceptores no download
   ) { }
 
   ngOnInit(): void {
@@ -73,11 +75,12 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
             urlFinal = urlFinal.replace('/pdf/livros/', '/api/livros/pdfs/');
           }
 
-          this.pdfUrl = urlFinal.startsWith('http')
+          const fullUrl = urlFinal.startsWith('http')
             ? urlFinal
             : `${environment.apiUrl}${urlFinal.startsWith('/') ? urlFinal : '/' + urlFinal}`;
           
-          console.log('PDF URL final:', this.pdfUrl);
+          console.log('Iniciando download seguro do PDF:', fullUrl);
+          this.baixarPdfComoBlob(fullUrl); // Chamada do método corrigido
         } else {
           console.error('URL do PDF não encontrada');
           this.erro = true;
@@ -86,31 +89,53 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
         }
 
         this.tituloLivro = dto.titulo || dto.tituloLivro || dto.nome || 'Livro sem título';
-        this.carregando = false;
 
         if (!this.progressoCarregado) {
           this.recuperarProgressoInicial();
         }
       },
       error: (err) => {
-        console.error('Erro ao carregar livro:', err);
+        console.error('Erro ao carregar metadados do livro:', err);
         this.erro = true;
         this.carregando = false;
       }
     });
 
     this.paginaChanges$
-      .pipe(debounceTime(0), takeUntil(this.destroy$))
+      .pipe(debounceTime(500), takeUntil(this.destroy$)) // Aumentado debounce para evitar spam
       .subscribe(page => {
         console.log('Salvando progresso - Página:', page);
         this.salvarProgresso(page);
       });
   }
 
+  // MÉTODO NOVO: Baixa o arquivo via HttpClient para disparar os Interceptors
+  private baixarPdfComoBlob(url: string) {
+    this.carregando = true;
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: (blob: Blob) => {
+        // Cria uma URL local segura para o binário baixado
+        this.pdfUrl = URL.createObjectURL(blob);
+        this.carregando = false;
+        console.log('✅ PDF baixado e processado com sucesso.');
+      },
+      error: (err) => {
+        console.error('❌ Erro ao baixar arquivo PDF (Provável 403 ou Ngrok):', err);
+        this.erro = true;
+        this.carregando = false;
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     this.salvarProgressoSync(this.paginaAtual);
     this.destroy$.next();
     this.destroy$.complete();
+    
+    // Limpeza de memória: revoga a URL do blob ao fechar o componente
+    if (this.pdfUrl && typeof this.pdfUrl === 'string' && this.pdfUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(this.pdfUrl);
+    }
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -121,7 +146,7 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
   pageLoaded(pdfDocumentProxy: any) {
     if (pdfDocumentProxy && pdfDocumentProxy.numPages) {
       this.totalPaginas = pdfDocumentProxy.numPages;
-      console.log('PDF carregado. Total de páginas:', this.totalPaginas);
+      console.log('PDF renderizado. Total de páginas:', this.totalPaginas);
 
       if (this.paginaAtual > this.totalPaginas) {
         this.paginaAtual = this.totalPaginas;
@@ -137,9 +162,7 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
     if (this.totalPaginas && page > this.totalPaginas) page = this.totalPaginas;
     if (page === this.paginaAtual) return;
 
-    console.log('Mudando para página:', page);
     this.paginaAtual = page;
-
     this.paginaChanges$.next(page);
 
     this.router.navigate([], {
@@ -163,96 +186,48 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
   }
 
   private recuperarProgressoInicial() {
-    console.log('Recuperando progresso inicial...');
-
     if (this.usuarioId) {
       this.leituraService.buscarProgresso(this.livroId)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (progress: any) => {
-            console.log('Progresso recebido do backend:', progress);
-
-            const paginaSalva = progress?.paginaAtual
-              ?? progress?.ultimaPaginaLida
-              ?? progress?.ultima_pagina_lida
-              ?? progress?.pagina
-              ?? null;
-
+            const paginaSalva = progress?.paginaAtual ?? progress?.ultimaPaginaLida ?? null;
             if (paginaSalva && paginaSalva > 0) {
-              const pagina = Number(paginaSalva);
-              console.log('Restaurando página:', pagina);
-              this.irParaPagina(pagina);
-            } else {
-              console.log('Nenhum progresso encontrado no backend');
+              this.paginaAtual = Number(paginaSalva);
             }
             this.progressoCarregado = true;
           },
-          error: (err) => {
-            console.error('Erro ao buscar progresso:', err);
-            this.progressoCarregado = true;
-          }
+          error: () => this.progressoCarregado = true
         });
     } else {
-      const chave = `progresso_livro_${this.livroId}`;
-      const raw = localStorage.getItem(chave);
-      console.log('Progresso do localStorage:', raw);
-
-      if (raw) {
-        const pagina = Number(raw);
-        if (!Number.isNaN(pagina) && pagina > 0) {
-          console.log('Restaurando página do localStorage:', pagina);
-          this.irParaPagina(pagina);
-        }
-      } else {
-        console.log('Nenhum progresso encontrado no localStorage');
-      }
+      const raw = localStorage.getItem(`progresso_livro_${this.livroId}`);
+      if (raw) this.paginaAtual = Number(raw);
       this.progressoCarregado = true;
     }
   }
 
   private salvarProgresso(pagina: number) {
     if (!pagina || pagina < 1) return;
-
     if (this.usuarioId) {
-      this.leituraService.salvarProgresso(this.livroId, pagina)
-        .subscribe({
-          next: () => console.log('Progresso salvo no backend:', pagina),
-          error: (err) => console.error('Erro ao salvar progresso:', err)
-        });
+      this.leituraService.salvarProgresso(this.livroId, pagina).subscribe();
     } else {
-      const chave = `progresso_livro_${this.livroId}`;
-      localStorage.setItem(chave, String(pagina));
-      console.log('Progresso salvo no localStorage:', pagina);
+      localStorage.setItem(`progresso_livro_${this.livroId}`, String(pagina));
     }
   }
 
   private salvarProgressoSync(pagina: number) {
     if (!pagina || pagina < 1) return;
-
     if (this.usuarioId) {
       try {
         const url = this.leituraService.getSalvarUrl(this.livroId);
         const dados = JSON.stringify({ paginaAtual: pagina });
         const blob = new Blob([dados], { type: 'application/json' });
-
-        if (navigator.sendBeacon) {
-          const sucesso = navigator.sendBeacon(url, blob);
-          console.log('SendBeacon executado:', sucesso, 'para URL:', url);
-          if (sucesso) return;
-        }
+        if (navigator.sendBeacon) navigator.sendBeacon(url, blob);
       } catch (err) {
-        console.error('Erro no sendBeacon:', err);
+        console.error('Erro sync:', err);
       }
-
-      this.leituraService.salvarProgresso(this.livroId, pagina)
-        .subscribe({
-          next: () => console.log('Progresso salvo (fallback)'),
-          error: (err) => console.error('Erro ao salvar (fallback):', err)
-        });
     } else {
-      const chave = `progresso_livro_${this.livroId}`;
-      localStorage.setItem(chave, String(pagina));
-      console.log('Progresso salvo no localStorage (sync):', pagina);
+      localStorage.setItem(`progresso_livro_${this.livroId}`, String(pagina));
     }
   }
 }
