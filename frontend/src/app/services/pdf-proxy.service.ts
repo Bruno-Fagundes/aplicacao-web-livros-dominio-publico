@@ -5,112 +5,103 @@ import { from, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PdfProxyService {
+  
   constructor() {}
 
-  /**
-   * Busca o PDF através do backend ngrok com os headers corretos
-   * usando fetch nativo para melhor controle sobre headers e CORS
-   */
+  // Tenta recuperar o token de várias chaves comuns
+  private getToken(): string | null {
+    return localStorage.getItem('token') || 
+           localStorage.getItem('access_token') || 
+           localStorage.getItem('auth_token'); 
+           // DICA: Verifique no DevTools -> Application -> Local Storage qual o nome exato da chave
+  }
+
   getPdfBlob(pdfUrl: string): Observable<Blob> {
     console.log('🔄 PdfProxyService.getPdfBlob chamado com URL:', pdfUrl);
     
+    const token = this.getToken();
+    
+    // 1. Configura os Headers
+    const headers: any = {
+      'ngrok-skip-browser-warning': 'true', // Pula o aviso do ngrok
+      'Accept': 'application/pdf'
+    };
+
+    // 2. Injeta o Token Manualmente (Fundamental para evitar erro 401)
+    if (token) {
+      // Remove aspas extras se houver (comum em alguns storages)
+      const cleanToken = token.replace(/"/g, ''); 
+      headers['Authorization'] = `Bearer ${cleanToken}`;
+      console.log('🔑 Token de autenticação injetado no fetch.');
+    } else {
+      console.warn('⚠️ Nenhum token encontrado no LocalStorage. A requisição pode falhar com 401.');
+    }
+
     return from(
       fetch(pdfUrl, {
         method: 'GET',
-        headers: {
-          'ngrok-skip-browser-warning': 'true',
-          'Accept': 'application/pdf'
-        },
-        credentials: 'omit',
+        headers: headers,
+        // CRÍTICO: 'omit' impede o envio de cookies automáticos.
+        // Isso permite que o backend responda com 'Access-Control-Allow-Origin: *'
+        // sem quebrar o CORS. A autenticação vai via header Authorization acima.
+        credentials: 'omit', 
         mode: 'cors'
       })
-      .then(response => {
-        console.log('📥 Resposta recebida:');
-        console.log('  - Status:', response.status, response.statusText);
-        console.log('  - Headers:', Object.fromEntries(response.headers.entries()));
-        console.log('  - OK:', response.ok);
-        console.log('  - Type:', response.type);
+      .then(async response => {
+        console.log('📥 Resposta recebida do fetch:');
+        console.log('  - Status:', response.status);
         console.log('  - URL:', response.url);
-        
-        const contentType = response.headers.get('content-type');
-        const contentLength = response.headers.get('content-length');
-        
-        console.log('  - Content-Type:', contentType);
-        console.log('  - Content-Length:', contentLength);
-        
+
+        // 3. Tratamento de Erros HTTP
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+           if (response.status === 401) throw new Error('Não autorizado (401). Verifique o login.');
+           if (response.status === 403) throw new Error('Acesso negado (403).');
+           if (response.status === 404) throw new Error('PDF não encontrado (404).');
+           throw new Error(`Erro HTTP! status: ${response.status}`);
         }
-        
-        // Verificar se é HTML (página de erro do ngrok)
+
+        const contentType = response.headers.get('content-type');
+        console.log('  - Content-Type:', contentType);
+
+        // 4. Validação: É HTML do ngrok disfarçado?
         if (contentType && contentType.includes('text/html')) {
-          console.error('❌ ERRO: Resposta é HTML, não PDF!');
-          console.error('   Isso significa que o ngrok está retornando a página de aviso.');
-          throw new Error('Ngrok retornou HTML ao invés de PDF. Configure o authtoken do ngrok.');
+          const text = await response.text();
+          console.error('❌ ERRO CRÍTICO: O servidor retornou HTML (provavelmente aviso do ngrok).');
+          console.error('Início do HTML:', text.substring(0, 100));
+          throw new Error('Ngrok bloqueou o acesso. Header ngrok-skip-browser-warning falhou?');
         }
-        
-        // Verificar se é PDF
-        if (contentType && !contentType.includes('application/pdf')) {
-          console.warn('⚠️ AVISO: Content-Type não é application/pdf:', contentType);
-        }
-        
+
         return response.blob();
       })
       .then(blob => {
-        console.log('📦 Blob criado:');
-        console.log('  - Tamanho:', blob.size, 'bytes');
-        console.log('  - Tipo:', blob.type);
+        console.log('📦 Blob recebido. Tamanho:', blob.size);
         
-        // Verificar os primeiros bytes do blob para confirmar que é PDF
+        // 5. Validação Profunda: Checar os "Magic Bytes" do PDF
         return new Promise<Blob>((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = (e) => {
-            const arrayBuffer = e.target?.result as ArrayBuffer;
-            const uint8Array = new Uint8Array(arrayBuffer.slice(0, 5));
-            const header = String.fromCharCode(...uint8Array);
+            const arr = (e.target?.result as ArrayBuffer).slice(0, 5);
+            const header = String.fromCharCode(...new Uint8Array(arr));
             
-            console.log('  - Header (primeiros 5 bytes):', header);
-            console.log('  - Bytes (hex):', Array.from(uint8Array).map(b => b.toString(16).padStart(2, '0')).join(' '));
-            
+            // %PDF- (header padrão de pdfs)
             if (header.startsWith('%PDF')) {
-              console.log('✅ CONFIRMADO: Arquivo é um PDF válido!');
-              resolve(blob);
+               console.log('✅ Arquivo validado: É um PDF real.');
+               resolve(blob);
             } else {
-              console.error('❌ ERRO: Arquivo NÃO é um PDF!');
-              console.error('   Header esperado: %PDF-');
-              console.error('   Header recebido:', header);
-              
-              // Ler mais para debug
-              const moreReader = new FileReader();
-              moreReader.onload = (e2) => {
-                const text = (e2.target?.result as string).substring(0, 500);
-                console.error('   Conteúdo (primeiros 500 chars):', text);
-              };
-              moreReader.readAsText(blob.slice(0, 500));
-              
-              reject(new Error('Arquivo baixado não é um PDF válido. Verifique se o ngrok está configurado corretamente.'));
+               console.error('❌ O arquivo baixado não parece um PDF. Header:', header);
+               reject(new Error('Conteúdo inválido. O arquivo não inicia com %PDF.'));
             }
           };
-          reader.onerror = () => {
-            console.error('❌ Erro ao ler o blob');
-            reject(new Error('Erro ao verificar o conteúdo do PDF'));
-          };
-          reader.readAsArrayBuffer(blob.slice(0, 5));
+          reader.onerror = () => reject(new Error('Erro ao ler blob.'));
+          reader.readAsArrayBuffer(blob);
         });
-      })
-      .catch(error => {
-        console.error('❌ ERRO no getPdfBlob:', error);
-        throw error;
       })
     );
   }
 
-  /**
-   * Converte o Blob em uma URL local que o pdf-viewer pode usar
-   */
   createBlobUrl(blob: Blob): string {
     const url = URL.createObjectURL(blob);
-    console.log('🔗 Blob URL criada:', url);
+    console.log('🔗 URL temporária criada:', url);
     return url;
   }
 }
