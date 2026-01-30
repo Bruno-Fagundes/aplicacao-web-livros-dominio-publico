@@ -6,6 +6,7 @@ import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { LeituraService } from '../../services/leitura.service';
 import { AuthService } from '../../services/auth.service';
 import { LivroService } from '../../services/livro.service';
+import { PdfProxyService } from '../../services/pdf-proxy.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -17,7 +18,7 @@ import { environment } from '../../../environments/environment';
 })
 export class LivroLeituraComponent implements OnInit, OnDestroy {
   public livroId = 0;
-  public pdfUrl = '';
+  public pdfUrl: string | Blob = ''; // Pode ser URL ou Blob
   public paginaAtual = 1;
   public totalPaginas = 0;
   public carregando = true;
@@ -28,13 +29,15 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private usuarioId: number | null = null;
   private progressoCarregado = false;
+  private blobUrl: string | null = null; // Para revogar depois
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private leituraService: LeituraService,
     private authService: AuthService,
-    private livroService: LivroService
+    private livroService: LivroService,
+    private pdfProxyService: PdfProxyService
   ) { }
 
   ngOnInit(): void {
@@ -82,11 +85,14 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
           }
 
           // Construir URL completa com environment.apiUrl se não for HTTP
-          this.pdfUrl = urlFinal.startsWith('http')
+          const pdfUrlCompleta = urlFinal.startsWith('http')
             ? urlFinal
             : `${environment.apiUrl}${urlFinal.startsWith('/') ? urlFinal : '/' + urlFinal}`;
           
-          console.log('PDF URL final:', this.pdfUrl);
+          console.log('PDF URL final:', pdfUrlCompleta);
+
+          // Carregar o PDF através do proxy service
+          this.carregarPdfComHeaders(pdfUrlCompleta);
         } else {
           console.error('URL do PDF não encontrada');
           this.erro = true;
@@ -95,11 +101,6 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
         }
 
         this.tituloLivro = dto.titulo || dto.tituloLivro || dto.nome || 'Livro sem título';
-        this.carregando = false;
-
-        if (!this.progressoCarregado) {
-          this.recuperarProgressoInicial();
-        }
       },
       error: (err) => {
         console.error('Erro ao carregar livro:', err);
@@ -116,7 +117,42 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
       });
   }
 
+  private carregarPdfComHeaders(url: string): void {
+    console.log('Carregando PDF através do proxy service...');
+    
+    this.pdfProxyService.getPdfBlob(url)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob) => {
+          console.log('PDF baixado com sucesso. Tamanho:', blob.size);
+          
+          // Criar uma URL local do Blob
+          this.blobUrl = this.pdfProxyService.createBlobUrl(blob);
+          this.pdfUrl = blob; // O pdf-viewer aceita tanto URL quanto Blob
+          
+          console.log('Blob URL criada:', this.blobUrl);
+          
+          this.carregando = false;
+
+          if (!this.progressoCarregado) {
+            this.recuperarProgressoInicial();
+          }
+        },
+        error: (err) => {
+          console.error('Erro ao carregar PDF:', err);
+          this.erro = true;
+          this.carregando = false;
+        }
+      });
+  }
+
   ngOnDestroy(): void {
+    // Revogar a Blob URL para liberar memória
+    if (this.blobUrl) {
+      URL.revokeObjectURL(this.blobUrl);
+      console.log('Blob URL revogada');
+    }
+
     this.salvarProgressoSync(this.paginaAtual);
     this.destroy$.next();
     this.destroy$.complete();
