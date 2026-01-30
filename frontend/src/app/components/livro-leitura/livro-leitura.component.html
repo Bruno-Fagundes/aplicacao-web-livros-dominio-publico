@@ -34,6 +34,7 @@
         [show-all]="false"
         [original-size]="true"
         (after-load-complete)="pageLoaded($event)"
+        [httpHeaders]="{ 'ngrok-skip-browser-warning': 'true' }"
         style="width: 100%; height: calc(100vh - 80px); display: block"
       ></pdf-viewer>
     </main>
