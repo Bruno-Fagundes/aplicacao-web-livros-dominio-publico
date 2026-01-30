@@ -7,7 +7,6 @@ import { LeituraService } from '../../services/leitura.service';
 import { AuthService } from '../../services/auth.service';
 import { LivroService } from '../../services/livro.service';
 import { environment } from '../../../environments/environment';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-livro-leitura',
