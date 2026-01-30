@@ -11,9 +11,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.util.AntPathMatcher;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -21,6 +23,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtUtils jwtUtils;
+    private final AntPathMatcher matcher = new AntPathMatcher();
+
+    private final List<String> publicPatterns = List.of(
+        "/auth/**",
+        "/debug/**",
+        "/public/**",
+        "/assets/**",
+        "/static/**",
+        "/autores/**",
+        "/playlists/**",
+        "/livros/pdf/**",
+        "/api/livros/pdf/**",
+        "/api/livros/pdfs/**",
+        "/livros",
+        "/livros/*/detalhes"
+    );
 
     public JwtAuthenticationFilter(JwtUtils jwtUtils) {
         this.jwtUtils = jwtUtils;
@@ -35,27 +53,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
         String authHeader = request.getHeader("Authorization");
 
-        log.debug("========================================");
-        log.debug("[JwtFilter] Method: {}", method);
-        log.debug("[JwtFilter] Path: {}", path);
-        log.debug("[JwtFilter] Authorization: {}", authHeader != null ? "Bearer ***" : "null");
-        log.debug("========================================");
-
-        if (isPublicPath(path)) {
-            log.debug("[JwtFilter] Caminho público detectado - passando sem validação");
+        // 1) short-circuit para preflight OPTIONS
+        if ("OPTIONS".equalsIgnoreCase(method)) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        log.debug("[JwtFilter] {} {}", method, path);
+
+        // 2) caminhos públicos
+        if (isPublicPath(path)) {
+            log.debug("[JwtFilter] Caminho público: {}", path);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 3) sem header -> passa adiante (rota pode recusar depois se necessário)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.debug("[JwtFilter] Sem Bearer token - passando");
+            log.debug("[JwtFilter] Sem Bearer token");
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
             String token = authHeader.substring(7);
-            log.debug("[JwtFilter] Token recebido (length={})", token.length());
+            // não logar token nem seu tamanho em produção; mantendo log mínimo
+            log.debug("[JwtFilter] Token recebido - validando...");
 
             if (!jwtUtils.validateToken(token)) {
                 log.warn("[JwtFilter] Token inválido ou expirado");
@@ -64,36 +87,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             Long userId = jwtUtils.getUserIdFromToken(token);
-            log.info("[JwtFilter] Token válido para userId={}", userId);
+            log.info("[JwtFilter] Autenticado userId={}", userId);
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            log.debug("[JwtFilter] Autenticação definida no SecurityContext");
-
         } catch (Exception e) {
-            log.error("[JwtFilter] Erro ao processar token: {}", e.getMessage());
+            log.error("[JwtFilter] Erro ao processar token", e);
         }
 
         filterChain.doFilter(request, response);
     }
 
     private boolean isPublicPath(String path) {
-        return path.startsWith("/auth/") ||
-            path.equals("/auth") ||
-            path.startsWith("/debug/") ||
-            path.startsWith("/public/") ||
-            path.startsWith("/assets/") ||
-            path.startsWith("/static/") ||
-            path.startsWith("/autores/") ||
-            path.startsWith("/playlists/") ||
-            path.startsWith("/livros/pdf/") || 
-            path.startsWith("/api/livros/pdf/") ||
-            path.startsWith("/api/livros/pdfs/") ||
-            path.matches("/livros/\\d+$") ||        
-            path.equals("/livros") ||                 
-            path.matches("/livros/\\d+/detalhes$");    
-        
+        // usa Ant matcher para suportar wildcard mais fácil
+        for (String pattern : publicPatterns) {
+            if (matcher.match(pattern, path)) return true;
+        }
+        // fallback para números simples: /livros/{id}
+        if (path.matches("/livros/\\d+$")) return true;
+        return false;
     }
 }
