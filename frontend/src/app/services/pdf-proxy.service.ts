@@ -1,26 +1,46 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PdfProxyService {
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   /**
    * Busca o PDF através do backend ngrok com os headers corretos
-   * e retorna como Blob para uso no pdf-viewer
+   * usando fetch nativo para melhor controle sobre headers e CORS
    */
   getPdfBlob(pdfUrl: string): Observable<Blob> {
-    const headers = new HttpHeaders({
-      'ngrok-skip-browser-warning': 'true'
-    });
-
-    return this.http.get(pdfUrl, {
-      headers,
-      responseType: 'blob'
-    });
+    return from(
+      fetch(pdfUrl, {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Accept': 'application/pdf'
+        },
+        credentials: 'omit', // Não envia cookies
+        mode: 'cors'
+      })
+      .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        console.log('Content-Type:', contentType);
+        
+        // Verifica se realmente é um PDF
+        if (contentType && !contentType.includes('application/pdf')) {
+          console.warn('Aviso: Content-Type não é application/pdf:', contentType);
+        }
+        
+        return response.blob();
+      })
+    );
   }
 
   /**
