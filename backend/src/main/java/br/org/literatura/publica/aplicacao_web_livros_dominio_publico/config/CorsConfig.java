@@ -16,15 +16,27 @@ public class CorsConfig {
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://literaturapublica.vercel.app")); 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        
+        // 🔥 A MUDANÇA MÁGICA ESTÁ AQUI:
+        // Use setAllowedOriginPatterns em vez de setAllowedOrigins.
+        // Isso permite Credentials=true funcionar com múltiplos domínios (ngrok, vercel, localhost)
+        config.setAllowedOriginPatterns(List.of("*")); 
+        
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
+        
+        // Permite todos os headers (Authorization, ngrok-skip, etc)
         config.setAllowedHeaders(List.of("*"));
+        
+        // Expõe headers importantes para o navegador conseguir ler o nome do arquivo ou erros
+        config.setExposedHeaders(List.of("Content-Disposition", "Content-Type", "Content-Length"));
+        
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        // Garante que o CORS seja a primeira coisa a ser processada, antes do Spring Security
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
     }
