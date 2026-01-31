@@ -92,13 +92,36 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
           console.log('PDF URL final:', pdfUrlCompleta);
 
           // Carregar o PDF através do proxy service
-          this.carregarPdfComHeaders(pdfUrlCompleta);
-        } else {
-          console.error('URL do PDF não encontrada');
-          this.erro = true;
-          this.carregando = false;
-          return;
+private carregarPdfComHeaders(url: string): void {
+  console.log('Carregando PDF através do proxy service...');
+  
+  this.pdfProxyService.getPdfBlob(url)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (blob) => {
+        console.log('PDF baixado com sucesso. Tamanho:', blob.size);
+        
+        // Criar uma URL local do Blob
+        this.blobUrl = URL.createObjectURL(blob);
+        
+        // ✅ IMPORTANTE: Use a Blob URL, não o Blob diretamente
+        this.pdfUrl = this.blobUrl; // MUDANÇA AQUI!
+        
+        console.log('Blob URL criada:', this.blobUrl);
+        
+        this.carregando = false;
+
+        if (!this.progressoCarregado) {
+          this.recuperarProgressoInicial();
         }
+      },
+      error: (err) => {
+        console.error('Erro ao carregar PDF:', err);
+        this.erro = true;
+        this.carregando = false;
+      }
+    });
+}
 
         this.tituloLivro = dto.titulo || dto.tituloLivro || dto.nome || 'Livro sem título';
       },
