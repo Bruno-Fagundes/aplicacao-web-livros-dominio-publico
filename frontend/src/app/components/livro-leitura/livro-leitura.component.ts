@@ -18,7 +18,7 @@ import { environment } from '../../../environments/environment';
 })
 export class LivroLeituraComponent implements OnInit, OnDestroy {
   public livroId = 0;
-  public pdfUrl: string | Blob = ''; // Pode ser URL ou Blob
+  public pdfUrl: string | Blob = '';
   public paginaAtual = 1;
   public totalPaginas = 0;
   public carregando = true;
@@ -29,7 +29,7 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private usuarioId: number | null = null;
   private progressoCarregado = false;
-  private blobUrl: string | null = null; // Para revogar depois
+  private blobUrl: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -69,7 +69,7 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
           
           console.log('URL original do backend:', urlFinal);
           
-          // Normalizar diferentes formatos de URL para o padrão /api/livros/pdf/ (SEM 's')
+          // Normalizar diferentes formatos de URL para o padrão /api/livros/pdf/
           if (urlFinal.startsWith('/pdfs/livros/')) {
             urlFinal = urlFinal.replace('/pdfs/livros/', '/api/livros/pdf/');
           } else if (urlFinal.startsWith('/livros/pdf/')) {
@@ -77,10 +77,8 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
           } else if (urlFinal.startsWith('/pdf/livros/')) {
             urlFinal = urlFinal.replace('/pdf/livros/', '/api/livros/pdf/');
           } else if (urlFinal.startsWith('/api/livros/pdfs/')) {
-            // Corrigir URLs antigas que usavam /pdfs/ com 's'
             urlFinal = urlFinal.replace('/api/livros/pdfs/', '/api/livros/pdf/');
           } else if (!urlFinal.startsWith('/api/livros/pdf/') && !urlFinal.startsWith('http')) {
-            // Se não tem nenhum prefixo conhecido, adicionar o padrão
             urlFinal = '/api/livros/pdf/' + urlFinal.replace(/^\/+/, '');
           }
 
@@ -92,36 +90,13 @@ export class LivroLeituraComponent implements OnInit, OnDestroy {
           console.log('PDF URL final:', pdfUrlCompleta);
 
           // Carregar o PDF através do proxy service
-private carregarPdfComHeaders(url: string): void {
-  console.log('Carregando PDF através do proxy service...');
-  
-  this.pdfProxyService.getPdfBlob(url)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (blob) => {
-        console.log('PDF baixado com sucesso. Tamanho:', blob.size);
-        
-        // Criar uma URL local do Blob
-        this.blobUrl = URL.createObjectURL(blob);
-        
-        // ✅ IMPORTANTE: Use a Blob URL, não o Blob diretamente
-        this.pdfUrl = this.blobUrl; // MUDANÇA AQUI!
-        
-        console.log('Blob URL criada:', this.blobUrl);
-        
-        this.carregando = false;
-
-        if (!this.progressoCarregado) {
-          this.recuperarProgressoInicial();
+          this.carregarPdfComHeaders(pdfUrlCompleta);
+        } else {
+          console.error('URL do PDF não encontrada');
+          this.erro = true;
+          this.carregando = false;
+          return;
         }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar PDF:', err);
-        this.erro = true;
-        this.carregando = false;
-      }
-    });
-}
 
         this.tituloLivro = dto.titulo || dto.tituloLivro || dto.nome || 'Livro sem título';
       },
@@ -150,8 +125,10 @@ private carregarPdfComHeaders(url: string): void {
           console.log('PDF baixado com sucesso. Tamanho:', blob.size);
           
           // Criar uma URL local do Blob
-          this.blobUrl = this.pdfProxyService.createBlobUrl(blob);
-          this.pdfUrl = blob; // O pdf-viewer aceita tanto URL quanto Blob
+          this.blobUrl = URL.createObjectURL(blob);
+          
+          // ✅ IMPORTANTE: Use a Blob URL, não o Blob diretamente
+          this.pdfUrl = this.blobUrl;
           
           console.log('Blob URL criada:', this.blobUrl);
           
